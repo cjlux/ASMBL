@@ -1,0 +1,31 @@
+@startuml
+class Parser {
+    main()
+    open_files()
+    split_additive_layers()
+    assign_cam_line_type()
+    group_cam_lines()
+    add_lead_in_out()
+    group_cam_segments()
+    split_cam_operations()
+    assign_cam_layer_height()
+    order_cam_operations_by_layer()
+    add_retracts()
+    merge_gcode_layers()
+    create_gcode_script()
+    set_last_additive_tool()
+    tool_change()
+    create_output_file()
+        config
+    progress
+    last_additive_tool
+    last_subtractive_tool
+    gcode_add
+    gcode_add_layers
+    cam_layers
+    merged_gcode
+    gcode_add
+    gcode_sub
+    __init__()
+}
+@enduml

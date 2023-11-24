@@ -113,9 +113,13 @@ def find_maxima(numbers):
 
 
 def open_file(path):
+    print(f"JLC:openning path: <{path}>")
     if sys.platform == 'win32':
         path = os.path.normpath(path)
         os.startfile(path, 'open')
-    else:
-        opener = 'open' if sys.platform == 'darwin' else 'xdg-open'
+    elif sys.platform == 'darwin':
+        opener = 'open' 
+        subprocess.call([opener, path])
+    elif sys.platform == 'linux':
+        opener = '/usr/bin/gedit' 
         subprocess.call([opener, path])

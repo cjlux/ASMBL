@@ -123,7 +123,7 @@ class Parser:
         for line in unlabelled_lines:
             if line.startswith('(type: '):
                 line_type = line[7:].strip(')')
-            elif line.startswith('('):
+            elif line.startswith('(') or line.startswith('M'):
                 continue
             else:
                 lines.append(CamGcodeLine(line, self.offset, line_type))
