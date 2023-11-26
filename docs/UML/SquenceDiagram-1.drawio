@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2023-11-25T09:26:43.571Z" agent="Mozilla/5.0 (X11; Linux x86_64; rv:120.0) Gecko/20100101 Firefox/120.0" etag="7CoOqJV6JWdIERrsLLi0" version="22.1.3" type="github">
+<mxfile host="app.diagrams.net" modified="2023-11-26T08:39:51.845Z" agent="Mozilla/5.0 (X11; Linux x86_64; rv:120.0) Gecko/20100101 Firefox/120.0" etag="1ae-fmZAEGO7elKhzLNT" version="22.1.3" type="github">
   <diagram name="Main seq. diag." id="2YBvvXClWsGukQMizWep">
     <mxGraphModel dx="778" dy="435" grid="1" gridSize="1" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -335,11 +335,11 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="RTwjRU6lgNz25zl83SIT-67" value="loop" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;width=40;height=15;fillColor=#1ba1e2;strokeColor=#006EAF;fontColor=#ffffff;" vertex="1" parent="1">
-          <mxGeometry x="135" y="268" width="371" height="67" as="geometry" />
+        <mxCell id="RTwjRU6lgNz25zl83SIT-67" value="loop" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;width=40;height=15;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="49" y="268" width="495" height="67" as="geometry" />
         </mxCell>
         <mxCell id="RTwjRU6lgNz25zl83SIT-75" value="loop" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;width=42;height=15;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
-          <mxGeometry x="33" y="371.5" width="505" height="326.5" as="geometry" />
+          <mxGeometry x="48" y="371.5" width="495" height="326.5" as="geometry" />
         </mxCell>
         <mxCell id="RTwjRU6lgNz25zl83SIT-81" value="loop" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;width=45;height=15;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
           <mxGeometry x="63" y="515" width="440" height="51" as="geometry" />
