@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2023-11-26T08:42:04.630Z" agent="Mozilla/5.0 (X11; Linux x86_64; rv:120.0) Gecko/20100101 Firefox/120.0" etag="hzWF6KTt51riVrT4jFWz" version="22.1.3" type="github">
+<mxfile host="app.diagrams.net" modified="2023-11-26T16:19:19.075Z" agent="Mozilla/5.0 (X11; Linux x86_64; rv:120.0) Gecko/20100101 Firefox/120.0" etag="Z3FX5GLHYwafNge-Jz_Q" version="22.1.3" type="github">
   <diagram name="Main seq. diag." id="2YBvvXClWsGukQMizWep">
-    <mxGraphModel dx="1602" dy="895" grid="1" gridSize="1" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="454" dy="254" grid="1" gridSize="1" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -24,8 +24,8 @@
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="68" y="73" as="sourcePoint" />
             <Array as="points">
-              <mxPoint x="97" y="77" />
-              <mxPoint x="97" y="86" />
+              <mxPoint x="85" y="77" />
+              <mxPoint x="85" y="86" />
             </Array>
           </mxGeometry>
         </mxCell>
@@ -255,7 +255,7 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="RTwjRU6lgNz25zl83SIT-59" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};fillColor=#a20025;strokeColor=#6F0000;fontColor=#ffffff;" vertex="1" parent="1">
+        <mxCell id="RTwjRU6lgNz25zl83SIT-59" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
           <mxGeometry x="566" y="437" width="10" height="16" as="geometry" />
         </mxCell>
         <mxCell id="RTwjRU6lgNz25zl83SIT-60" value="" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;curved=0;rounded=0;" edge="1" parent="1">
