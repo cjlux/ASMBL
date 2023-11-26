@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2023-11-26T17:31:16.484Z" agent="Mozilla/5.0 (X11; Linux x86_64; rv:120.0) Gecko/20100101 Firefox/120.0" etag="BPA7G9Q0s-DLYsH542nP" version="22.1.3" type="github">
+<mxfile host="app.diagrams.net" modified="2023-11-26T17:48:46.834Z" agent="Mozilla/5.0 (X11; Linux x86_64; rv:120.0) Gecko/20100101 Firefox/120.0" etag="WuSZcybdc-nmTHXfXarx" version="22.1.3" type="github">
   <diagram name="Main seq. diag." id="2YBvvXClWsGukQMizWep">
-    <mxGraphModel dx="528" dy="304" grid="1" gridSize="1" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="754" dy="435" grid="1" gridSize="1" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -190,8 +190,8 @@
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="65" y="25" as="sourcePoint" />
             <Array as="points">
-              <mxPoint x="95" y="25" />
-              <mxPoint x="95" y="32" />
+              <mxPoint x="87" y="25" />
+              <mxPoint x="87" y="32" />
             </Array>
           </mxGeometry>
         </mxCell>
@@ -202,8 +202,8 @@
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="65" y="43" as="sourcePoint" />
             <Array as="points">
-              <mxPoint x="95" y="43" />
-              <mxPoint x="95" y="51" />
+              <mxPoint x="87" y="43" />
+              <mxPoint x="87" y="51" />
             </Array>
           </mxGeometry>
         </mxCell>
@@ -299,7 +299,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="RTwjRU6lgNz25zl83SIT-68" value="AdditiveGcodeLayer:" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};size=15;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
-          <mxGeometry x="308" y="275" width="120" height="61" as="geometry" />
+          <mxGeometry x="306" y="275" width="120" height="61" as="geometry" />
         </mxCell>
         <mxCell id="RTwjRU6lgNz25zl83SIT-69" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="RTwjRU6lgNz25zl83SIT-68">
           <mxGeometry x="55" y="19" width="10" height="37" as="geometry" />
