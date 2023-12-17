@@ -55,6 +55,9 @@ def convert_relative(gcode_abs):
 
 
 def offset_gcode(gcode, offset):
+    '''Applies the X, Y & Z offset to the values of X, Y & Z displ. of the gcode line.
+       Returns the modified gcode line.'''
+       
     gcode_segments = gcode.split(' ')
     offset_gcode = ''
     for gcode_segment in gcode_segments:

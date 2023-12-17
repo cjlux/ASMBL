@@ -24,7 +24,6 @@ class Parser:
         self.progress = progress    # progress bar for Fusion add-in
         self.offset = (config['Printer']['bed_centre_x'],
                        config['Printer']['bed_centre_y'],
-
                        config['PrintSettings']['raft_height'] - config['CamSettings']['layer_dropdown']
                        )
 
@@ -82,11 +81,11 @@ class Parser:
 
     def open_files(self, config):
         """ Open the additive and subtractive gcode files in `config` """
-        gcode_add_file = open(config['InputFiles']['additive_gcode'], 'r')
-        self.gcode_add = gcode_add_file.read()
+        with open(config['InputFiles']['additive_gcode'], 'r') as gcode_add_file:
+            self.gcode_add = gcode_add_file.read()
 
-        gcode_sub_file = open(config['InputFiles']['subtractive_gcode'], 'r')
-        self.gcode_sub = gcode_sub_file.read()
+        with open(config['InputFiles']['subtractive_gcode'], 'r') as gcode_sub_file:
+            self.gcode_sub = gcode_sub_file.read()
 
     def split_additive_layers(self, gcode_add):
         """ Takes Simplify3D gcode and splits in by layer """
@@ -132,7 +131,7 @@ class Parser:
 
     def group_cam_lines(self, lines):
         """
-        Group consequetive lines of the same type into segments
+        Group consecutive lines of the same type into CamGcodeSegment segments
         Returns a list of segments
         """
         segments = []
