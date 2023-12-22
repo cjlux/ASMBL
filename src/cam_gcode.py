@@ -9,7 +9,7 @@ class CamGcodeLine:
         self.gcode = utils.offset_gcode(gcode, offset)
         self.layer_height = self.get_layer_height(self.gcode)
         self.type = line_type
-
+        
     def get_layer_height(self, gcode):
         """Return the layer height of single line of gcode."""
         return float(gcode.split('Z')[1].split(' ')[0])
@@ -55,11 +55,12 @@ class CamGcodeSegment:
 class CamGcodeLayer:
     """ Stores all the CAM operations in a specific layer. """
 
-    def __init__(self, segments, name=None, strategy=None, tool=None, cutting_height=None):
+    def __init__(self, segments, name=None, strategy=None, tool=None, start_tool=None, cutting_height=None):
         self.segments = segments
         self.name = name
         self.strategy = strategy
         self.tool = tool
+        self.start_tool = start_tool
         self.planar = None
         self.cutting_height = cutting_height
         self.gcode = None

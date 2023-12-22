@@ -170,11 +170,11 @@ class Parser:
 
         return segments[start_index:end_index+1]
 
-    def group_cam_segments(self, segments, name, strategy, tool):
+    def group_cam_segments(self, segments, name, strategy, tool, start_tool):
         """
         Group all cutting segments with a continuous and equal cutting height, including all intermediary segments.
         Lead-ins and lead-outs will be added to the start and end respectively if they exist.
-        Consequetive non planar segments are also grouped together.
+        Consecutive non planar segments are also grouped together.
 
         Returns a list of layers, each to be merged as a whole unit.
         """
@@ -191,11 +191,11 @@ class Parser:
                 cutting_height = cutting_segment.height
 
                 layer_group = self.add_lead_in_out(segments, cutting_group)
-                cam_layers.append(CamGcodeLayer(layer_group, name, strategy, tool))
+                cam_layers.append(CamGcodeLayer(layer_group, name, strategy, tool, start_tool))
                 cutting_group = [cutting_segment]
 
         layer_group = self.add_lead_in_out(segments, cutting_group)
-        cam_layers.append(CamGcodeLayer(layer_group, name, strategy, tool))
+        cam_layers.append(CamGcodeLayer(layer_group, name, strategy, tool, start_tool))
 
         return cam_layers
 
@@ -210,11 +210,23 @@ class Parser:
             name = unlabelled_lines.pop(0)
             strategy = unlabelled_lines.pop(0)[11:].strip(')')
             tool = unlabelled_lines.pop(0)
+            #<JLC>
+            start_tool = unlabelled_lines.pop(0) if unlabelled_lines[0][0] == 'M' else None
+            #</JLC>
             unlabelled_lines = [line for line in unlabelled_lines if line != '']
 
+            # 'lines' is the list of CamGcodeLine objects:
             lines = self.assign_cam_line_type(unlabelled_lines)
+            
+            # 'segments' is the list of CamGcodeSegment objects (each grouping consecutive 
+            # lines of 'lines' of the same type):
             segments = self.group_cam_lines(lines)
-            operation_layers = self.group_cam_segments(segments, name, strategy, tool)
+            
+            # 'operation_layers' is the list of CamGcodeLayer objects (each grouping the 
+            # cutting segments of equal cutting height or the non-planer cutting segments
+            # that make the current operation):
+            operation_layers = self.group_cam_segments(segments, name, strategy, tool, start_tool)
+            
             operations.append(operation_layers)
 
         return operations
@@ -226,7 +238,14 @@ class Parser:
         if (not cam_layer.planar) or (len(later_planar_layers) == 0):
             cutting_height = cam_layer.cutting_height
         else:
-            cutting_height = min([layer.cutting_height for layer in later_planar_layers])
+            #<JLC>
+            # was:  cutting_height = min([layer.cutting_height for layer in later_planar_layers])
+            min_cutting_height_later_planar_layers = min([layer.cutting_height for layer in later_planar_layers])
+            if min_cutting_height_later_planar_layers - cam_layer.cutting_height > 1:
+                cutting_height = cam_layer.cutting_height
+            else:
+                cutting_height = min_cutting_height_later_planar_layers
+            #</JLC>
 
         later_additive = [layer for layer in self.gcode_add_layers[:-1]
                           if layer.layer_height > cutting_height]
@@ -318,6 +337,9 @@ class Parser:
                 self.merged_gcode_script += self.last_additive_tool + '\n'
         elif type(layer) == CamGcodeLayer:
             self.merged_gcode_script += layer.tool + '\n'
+            #<JLC>
+            if layer.start_tool != None: self.merged_gcode_script += layer.start_tool + '\n'
+            #</JLC>
 
     def create_output_file(self, gcode, folder_path="output/", relative_path=True):
         """ Saves the file to the output folder """
