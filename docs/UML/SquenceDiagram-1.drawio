@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2023-12-20T20:01:40.361Z" agent="Mozilla/5.0 (X11; Linux x86_64; rv:120.0) Gecko/20100101 Firefox/120.0" etag="i-5MFnY3sC3dot22O8rw" version="22.1.11" type="github" pages="2">
+<mxfile host="app.diagrams.net" modified="2023-12-22T10:45:49.794Z" agent="Mozilla/5.0 (X11; Linux x86_64; rv:120.0) Gecko/20100101 Firefox/120.0" etag="dEcbawUFxhAtht3iy59r" version="22.1.11" type="github" pages="2">
   <diagram name="Main seq. diag." id="2YBvvXClWsGukQMizWep">
-    <mxGraphModel dx="1461" dy="913" grid="0" gridSize="1" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1012" dy="585" grid="0" gridSize="1" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -609,16 +609,22 @@
         <mxCell id="VmXkso3KA5exqOnQr0_7-24" value="[False]" style="text;html=1;" vertex="1" parent="1">
           <mxGeometry x="83" y="683" width="37" height="31" as="geometry" />
         </mxCell>
+        <mxCell id="OojuZCfqam61P7qyUYKV-1" value="&lt;b&gt;CamGcodeLine&lt;/b&gt;: one line of Gcode, with &lt;b&gt;height&lt;/b&gt; and &lt;b&gt;type&lt;/b&gt; attributes." style="shape=note2;boundedLbl=1;whiteSpace=wrap;html=1;size=9;verticalAlign=top;align=left;fillColor=#fff2cc;gradientColor=#ffd966;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="592" y="395" width="219" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="1t2HKy5QaEQ31QvLqaeb-1" value="&lt;b&gt;CamGcodeSegment&lt;/b&gt;: a set of CamGcodeLine objects grouping consecutive &lt;b&gt;CamGcodeLine&lt;/b&gt; of the same type" style="shape=note2;boundedLbl=1;whiteSpace=wrap;html=1;size=9;verticalAlign=top;align=left;fillColor=#fff2cc;gradientColor=#ffd966;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="592" y="497" width="219" height="83" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
   <diagram id="N3o2tqIcJihyE85qOkxA" name="Classes">
-    <mxGraphModel dx="1315" dy="822" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1096" dy="634" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="8GymEpUT8A339wiU7GDv-1" value="CamGcodeLine" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
-          <mxGeometry x="40" y="130" width="300" height="120" as="geometry" />
+          <mxGeometry x="40" y="170" width="300" height="120" as="geometry" />
         </mxCell>
         <mxCell id="8GymEpUT8A339wiU7GDv-7" value="&lt;div&gt;gcode: str&lt;/div&gt;&lt;div&gt;layer_height: float&lt;/div&gt;&lt;div&gt;type: str&lt;br&gt;&lt;/div&gt;" style="text;strokeColor=#6c8ebf;fillColor=#dae8fc;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8GymEpUT8A339wiU7GDv-1">
           <mxGeometry y="26" width="300" height="54" as="geometry" />
@@ -626,13 +632,13 @@
         <mxCell id="8GymEpUT8A339wiU7GDv-4" value="&lt;div&gt;__init__(gcode:str, offset: tuple, line_type:str) &lt;br&gt;&lt;/div&gt;&lt;div&gt;get_layer_height(gcode): float&lt;/div&gt;" style="text;strokeColor=#6c8ebf;fillColor=#dae8fc;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8GymEpUT8A339wiU7GDv-1">
           <mxGeometry y="80" width="300" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="8GymEpUT8A339wiU7GDv-5" value="Stores a single line of fusion360 CAM gcode." style="shape=note2;boundedLbl=1;whiteSpace=wrap;html=1;size=12;verticalAlign=top;align=left;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;spacing=2;" vertex="1" parent="1">
-          <mxGeometry x="400" y="150" width="320" height="54" as="geometry" />
+        <mxCell id="8GymEpUT8A339wiU7GDv-5" value="Stores a single line of fusion360 CAM gcode, extracting &lt;b&gt;layer_height&lt;/b&gt; and &lt;b&gt;type&lt;/b&gt; attributes." style="shape=note2;boundedLbl=1;whiteSpace=wrap;html=1;size=12;verticalAlign=top;align=left;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;spacing=2;" vertex="1" parent="1">
+          <mxGeometry x="400" y="190" width="320" height="54" as="geometry" />
         </mxCell>
         <mxCell id="8GymEpUT8A339wiU7GDv-6" value="" style="endArrow=none;dashed=1;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.999;exitY=0.375;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="8GymEpUT8A339wiU7GDv-7" target="8GymEpUT8A339wiU7GDv-5">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="342.73000000000025" y="345.384" as="sourcePoint" />
-            <mxPoint x="320" y="230" as="targetPoint" />
+            <mxPoint x="342.73000000000025" y="385.384" as="sourcePoint" />
+            <mxPoint x="320" y="270" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="8GymEpUT8A339wiU7GDv-8" value="CamGcodeSegment&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
