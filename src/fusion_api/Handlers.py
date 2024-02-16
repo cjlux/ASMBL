@@ -264,7 +264,7 @@ class PostProcessCreatedEventHandler(adsk.core.CommandCreatedEventHandler):
 
             # Create CAM inputs
             layerOverlapInput = groupCamChildInputs.addIntegerSpinnerCommandInput(
-                'layerOverlap', 'Layer Overlap', 0, 10000, 1, 1)
+                'layerOverlap', 'Layer Overlap', 0, 10000, 1, 3)
             layerOverlapInput.tooltip = 'How many layers each cutting segment should be delayed by before executing'
             layerOverlapInput.tooltipDescription = '\
                 <br>This does <b>NOT</b> alter the toolpath, only when it happens</br>\
