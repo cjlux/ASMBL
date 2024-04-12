@@ -64,17 +64,17 @@ def offset_gcode(gcode, offset):
         if gcode_segment[0] == 'X':
             x_pos = float(gcode_segment[1:])
             x_pos += offset[0]
-            gcode_segment = gcode_segment[0] + str(x_pos)
+            gcode_segment = gcode_segment[0] + f'{x_pos:.3f}'
 
         elif gcode_segment[0] == 'Y':
             y_pos = float(gcode_segment[1:])
             y_pos += offset[1]
-            gcode_segment = gcode_segment[0] + str(y_pos)
+            gcode_segment = gcode_segment[0] + f'{y_pos:.3f}'
 
         elif gcode_segment[0] == 'Z':
             z_pos = float(gcode_segment[1:])
             z_pos += offset[2]
-            gcode_segment = gcode_segment[0] + str(z_pos)
+            gcode_segment = gcode_segment[0] + f'{z_pos:.3f}'
 
         offset_gcode += ' ' + gcode_segment
 

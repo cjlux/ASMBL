@@ -26,9 +26,12 @@ class Parser:
                        config['Printer']['bed_centre_y'],
                        config['PrintSettings']['raft_height'] - config['CamSettings']['layer_dropdown']
                        )
-
+        #<JLC>
+        self.flag_append_AddSubGcode = config['Flags']['append_AddSubGcode']
+        #</JLC>
+        
         self.last_additive_tool = None
-        self.last_subtractive_tool = None
+        self.last_subtractive_tool = None 
 
         self.main()
 
@@ -49,6 +52,18 @@ class Parser:
             progress.progressValue += 1
         self.gcode_add = utils.convert_relative(self.gcode_add)
 
+        #<JLC>
+        if self.flag_append_AddSubGcode:
+            if progress:
+                progress.message = 'Appending substractive to additive Gcode'
+                progress.progressValue += 1
+                
+            self.merged_gcode_script = '; ASMBL gcode created by https://github.com/cjlux/ASMBL\n'
+            self.merged_gcode_script += self.appendSub2AddGcode()
+            
+            return
+        #</JLC>
+        
         print('Spliting additive gcode layers...')
         if progress:
             progress.message = 'Spliting additive gcode layers'
@@ -86,6 +101,13 @@ class Parser:
 
         with open(config['InputFiles']['subtractive_gcode'], 'r') as gcode_sub_file:
             self.gcode_sub = gcode_sub_file.read()
+            
+    #<JLC>
+    def appendSub2AddGcode(self):
+        """ Just append the substractive Gcode to the additive Gcode..."""
+        if self.gcode_add[-1] != '\n': self.gcode_add += '\n'
+        return self.gcode_add + self.gcode_sub
+    #</JLC>
 
     def split_additive_layers(self, gcode_add):
         """ Takes Simplify3D gcode and splits in by layer """
@@ -184,7 +206,11 @@ class Parser:
         cutting_height = cutting_segments[0].height
         for cutting_segment in cutting_segments[1:]:
             # TODO logic needs fixing to deal with non planar and planar segments in same operation
-            if cutting_segment.height == cutting_height or cutting_segment.planar is False or len(cutting_segment.lines) == 1:
+            #<JLC>
+            # 1/ was: if cutting_segment.height == cutting_height or cutting_segment.planar is False or len(cutting_segment.lines) == 1:
+            # 2/ was: if cutting_segment.height == cutting_height or cutting_segment.planar is False:
+            if cutting_segment.height == cutting_height:
+            #</JLC>
                 cutting_group.append(cutting_segment)
                 cutting_height = cutting_segment.height
             else:
@@ -303,7 +329,9 @@ class Parser:
     def merge_gcode_layers(self, gcode_add, cam_layers):
         """ Takes the individual CAM instructions and merges them into the additive file from Simplify3D """
         for cam_layer in cam_layers:
-            self.add_retracts(cam_layer)
+            #<JLC>
+            self.add_retracts(cam_layer, 10)  # second argument was by default
+            #</JLC>
 
         merged_gcode = gcode_add + cam_layers
         merged_gcode.sort(key=lambda x: x.layer_height)
@@ -312,7 +340,7 @@ class Parser:
 
     def create_gcode_script(self, gcode):
         """ Converts list of layers into a single string with appropriate tool changes """
-        self.merged_gcode_script = '; ASMBL gcode created by https://github.com/AndyEveritt/ASMBL\n'
+        self.merged_gcode_script = '; ASMBL gcode created by https://github.com/cjlux/ASMBL\n'
         prev_layer = gcode[0]
         for layer in gcode:
             self.set_last_additive_tool(prev_layer)

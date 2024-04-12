@@ -251,6 +251,12 @@ class PostProcessCreatedEventHandler(adsk.core.CommandCreatedEventHandler):
                 'viewIntermediateFiles', 'View Intermediate Files', True, '', False)
             viewIntermediateFilesInput.tooltip = 'Pre-merged gcode files will be opened in your default txt editor.'
 
+            #<JLC>
+            appendAddSubGcode = tabSettingsChildInputs.addBoolValueInput(
+                'appendAddSubGcode', 'Append Add & Sub Gcode', True, '', False)
+            appendAddSubGcode.tooltip = 'Just append the subtractive Gcode to the additive Gocde.'
+            #</JLC>
+
             # Create an editable textbox input.
             tabSettingsChildInputs.addTextBoxCommandInput('outputName', 'Output File Name', '1001', 1, False)
 
@@ -290,6 +296,30 @@ class PostProcessCreatedEventHandler(adsk.core.CommandCreatedEventHandler):
                 Setting it equal to half a layer height can create smoother cut surfaces</br>'
             layerDropdownInput.toolClipFilename = os.path.join(
                 Path(__file__).parents[2], 'resources', 'GenerateAsmbl', 'tooltip_dropdown.png')
+            
+            #<JLC>
+            zRangeMax_3Dsurfacing_mm = groupCamChildInputs.addFloatSpinnerCommandInput(
+                'zRange3Dmm', 'zRangeMax 3D surfacing', 'mm', 0, 100, 0.1, 2)
+            zRangeMax_3Dsurfacing_mm.tooltip = 'the max range [mm] of 3D surfacing above which operation is spllited'
+            zRangeMax_3Dsurfacing_mm.tooltipDescription = '\
+                <br>This alters the toolpath and when it hapens</br>\
+                <br></br>\
+                <br>When a CAM 3D surfacing covers a large Z range, it will be splitted in overlapping </br>\
+                <br>smaller surfacing operations (see parameter "z_overlap_3D_mm").</br>'
+            zRangeMax_3Dsurfacing_mm.toolClipFilename = os.path.join(
+                Path(__file__).parents[2], 'resources', 'GenerateAsmbl', 'tooltip_dropdown.png')
+            
+            zOverlap_3Dsurfacing_mm = groupCamChildInputs.addFloatSpinnerCommandInput(
+                'zOverlap3Dmm', 'Splitting Z overlap', 'mm', 0, 5, 0.1, 1)
+            zOverlap_3Dsurfacing_mm.tooltip = 'the overlaping of splitted 3D surfacing operations'
+            zOverlap_3Dsurfacing_mm.tooltipDescription = '\
+                <br>This alters the toolpath and when it hapens</br>\
+                <br></br>\
+                <br>When a CAM 3D surfacing covers a large Z range, it will be splitted overlapping </br>\
+                <br>overlapping surfacing operations : this parameter gives the overlapping in mm.</br>'
+            zOverlap_3Dsurfacing_mm.toolClipFilename = os.path.join(
+                Path(__file__).parents[2], 'resources', 'GenerateAsmbl', 'tooltip_dropdown.png')
+            #</JLC>
 
         except:
             ui.messageBox('Failed:\n{}'.format(traceback.format_exc()))
@@ -315,6 +345,11 @@ class PostProcessExecuteHandler(adsk.core.CommandEventHandler):
         layerOverlap = inputs.itemById('layerOverlap').value
         layerDropdown = inputs.itemById('layerDropdown').value
         outputName = inputs.itemById('outputName').text
+        #<JLC>
+        appendAddSubGcode = inputs.itemById('appendAddSubGcode').value
+        zRangeMax3Dsurfacing_mm = inputs.itemById('zRange3Dmm').value
+        zOverlap3Dsurfacing_mm = inputs.itemById('zOverlap3Dmm').value
+        #</JLC>
 
         doc = app.activeDocument
         products = doc.products
@@ -338,10 +373,10 @@ class PostProcessExecuteHandler(adsk.core.CommandEventHandler):
         tmpSubtractive = os.path.join(outputFolder, 'tmpSubtractive.gcode')
 
         # remove old files
-        if os.path.exists(tmpAdditive):
-            os.remove(tmpAdditive)
-        if os.path.exists(tmpSubtractive):
-            os.remove(tmpSubtractive)
+        # if os.path.exists(tmpAdditive):
+        #     os.remove(tmpAdditive)
+        # if os.path.exists(tmpSubtractive):
+        #     os.remove(tmpSubtractive)
 
         try:
             start = time.time()
@@ -380,10 +415,15 @@ class PostProcessExecuteHandler(adsk.core.CommandEventHandler):
             },
             "CamSettings": {
                 "layer_overlap": layerOverlap,
-                "layer_dropdown": layerDropdown
+                "layer_dropdown": layerDropdown,
+                "3D_z_range_mm": zRangeMax3Dsurfacing_mm,
+                "3D_z_overlap_mm": zOverlap3Dsurfacing_mm 
             },
             "OutputSettings": {
                 "filename": outputName
+            },
+            "Flags": {
+                "append_AddSubGcode": appendAddSubGcode
             }
         }
         # ui.messageBox(config.__str__())

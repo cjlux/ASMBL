@@ -46,7 +46,12 @@ class CamGcodeSegment:
         if round(max_height - min_height, 6) > threshold:
             self.height = max_height
             self.planar = False
-
+        #<JLC> ajout
+        elif len(self.lines) == 1:
+            assert max_height == min_height
+            self.height = min_height
+        #</JLC>
+                    
         else:
             self.height = min_height
             self.planar = True

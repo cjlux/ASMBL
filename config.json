@@ -1,7 +1,7 @@
 {
     "InputFiles": {
-        "additive_gcode": "../gcode/tmpAdditive.gcode",
-        "subtractive_gcode": "../gcode/tmpSubtractive.gcode"
+        "additive_gcode": "gcode/tmpAdditive_ramp.gcode",
+        "subtractive_gcode": "gcode/tmpSubtractive_ramp.gcode"
     },
     "Printer": {
         "bed_centre_x": 0,
@@ -11,10 +11,15 @@
         "raft_height": 0
     },
     "CamSettings": {
-        "layer_overlap": 1,
-        "layer_dropdown": 0
+        "layer_overlap": 3,
+        "layer_dropdown": 0,
+        "z_range_3D_mm": 2,
+        "z_overlap_3D_mm": 1 
     },
     "OutputSettings": {
         "filename": "tmp"
+    },
+    "Flags": {
+        "append_AddSubGcode": 0
     }
 }
