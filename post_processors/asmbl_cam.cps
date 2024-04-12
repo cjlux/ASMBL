@@ -55,15 +55,15 @@ var mFormat = createFormat({prefix:"M", decimals:0});
 var xyzFormat = createFormat({decimals:(unit == MM ? 3 : 4), trim:false});
 var feedFormat = createFormat({decimals:(unit == MM ? 1 : 2)});
 var toolFormat = createFormat({decimals:0});
-// var rpmFormat = createFormat({decimals:0});
+var rpmFormat = createFormat({decimals:0});
 var secFormat = createFormat({decimals:3, forceDecimal:true}); // seconds - range 0.001-1000
-// var taperFormat = createFormat({decimals:1, scale:DEG});
+var taperFormat = createFormat({decimals:1, scale:DEG});
 
 var xOutput = createVariable({prefix:"X", force:true}, xyzFormat);
 var yOutput = createVariable({prefix:"Y", force:true}, xyzFormat);
 var zOutput = createVariable({prefix:"Z", force:true}, xyzFormat);
 var feedOutput = createVariable({prefix:"F", force:true}, feedFormat);
-// var sOutput = createVariable({prefix:"S", force:true}, rpmFormat);
+var sOutput = createVariable({prefix:"S", force:true}, rpmFormat);
 
 // circular output
 var iOutput = createReferenceVariable({prefix:"I", force:true}, xyzFormat);
@@ -152,6 +152,8 @@ function onSection() {
   // }
   
   writeBlock("T" + toolFormat.format(tool.number));
+  writeBlock("M3 " + sOutput.format(spindleSpeed)); // #namma
+  
 
   forceXYZ();
 
@@ -251,7 +253,7 @@ function onDwell(seconds) {
 }
 
 function onSpindleSpeed(spindleSpeed) {
-  // writeBlock(sOutput.format(spindleSpeed));
+  writeBlock(sOutput.format(spindleSpeed));
 }
 
 var pendingRadiusCompensation = -1;

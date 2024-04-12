@@ -41,6 +41,10 @@ var zFormat = createFormat({decimals: (unit == MM ? 3 : 4)});
 var gFormat = createFormat({prefix: "G", width: 1, zeropad: false, decimals: 0});
 var mFormat = createFormat({prefix: "M", width: 2, zeropad: true, decimals: 0});
 var tFormat = createFormat({prefix: "T", width: 1, zeropad: false, decimals: 0});
+var aFormat = createFormat({prefix: "A", width: 1, zeropad: false, decimals: 0});
+var rFormat = createFormat({prefix: "R", width: 1, zeropad: false, decimals: 0});
+var sFormat = createFormat({prefix: "S", width: 1, zeropad: false, decimals: 0});
+var pFormat = createFormat({prefix: "P", width: 1, zeropad: false, decimals: 0});
 var feedFormat = createFormat({decimals: (unit == MM ? 0 : 1)});
 var integerFormat = createFormat({decimals:0});
 var dimensionFormat = createFormat({decimals: (unit == MM ? 3 : 4), zeropad: false, suffix: (unit == MM ? "mm" : "in")});
@@ -56,6 +60,8 @@ var feedOutput = createVariable({prefix: "F"}, feedFormat);
 var eOutput = createVariable({prefix: "E"}, xyzFormat);  // Extrusion length
 var sOutput = createVariable({prefix: "S", force: true}, xyzFormat);  // Parameter temperature or speed
 var pOutput = createVariable({prefix: "P", force: true}, xyzFormat);  // P parameter
+var rOutput = createVariable({prefix: "R", force: true}, xyzFormat);  // R parameter
+var aOutput = createVariable({prefix: "A", force: true}, xyzFormat);  // A parameter
 
 // Writes the specified block.
 function writeBlock() {
@@ -170,10 +176,10 @@ function onSection() {
   onExtruderChange(activeExtruder)
 
   // load mesh bed level
-  writeBlock(gFormat.format(29), sOutput.format(1));
+  // writeBlock(gFormat.format(29), sOutput.format(1));
 
   // turn on the ESC
-  writeBlock(mFormat.format(280), pOutput.format(7), sOutput.format(40))
+  // writeBlock(mFormat.format(280), pOutput.format(7), sOutput.format(40))
 }
 
 function onRapid(_x, _y, _z) {
@@ -197,13 +203,25 @@ function onLinearExtrude(_x, _y, _z, _f, _e) {
 }
 
 // Temp controller not needed for ASMBL
-// function onBedTemp(temp, wait) {
-//   if (wait) {
-//     writeBlock(mFormat.format(190), sOutput.format(temp));
-//   } else {
-//     writeBlock(mFormat.format(140), sOutput.format(temp));
-//   }
-// }
+function onBedTemp(temp, wait) {
+  if (wait) {
+    writeBlock(mFormat.format(190), sOutput.format(temp));
+  } else {
+    writeBlock(mFormat.format(140), sOutput.format(temp));
+  }
+}
+function onExtruderTemp(temp, wait, id) {
+  if (id < numberOfExtruders) {
+    if (wait) {
+      writeBlock(mFormat.format(568),pFormat.format(id), rOutput.format(temp-10));
+      writeBlock(mFormat.format(116), sOutput.format(5))
+    } else {
+      writeBlock(mFormat.format(568),pFormat.format(id), sOutput.format(temp));
+    }
+  } else {
+    error(localize("This printer doesn't support the extruder ") + integerFormat.format(id) + " !");
+  }
+}
 
 function onExtruderChange(id) {
   if (id < numberOfExtruders) {
