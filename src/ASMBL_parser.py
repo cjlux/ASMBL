@@ -134,7 +134,12 @@ class Parser:
         overlapping each other with zOverlap3Dsurfacing_mm.
         '''
         blocs_to_split = self.split_gcode_file_stage1()
-        splitted_gcode = self.split_gcode_file_stage2(blocs_to_split)
+        
+        if len(blocs_to_split) == 0:
+            # nothing to do...
+            splitted_gcode = ''.join(self.gcode_sub_lines)
+        else:
+            splitted_gcode = self.split_gcode_file_stage2(blocs_to_split)
         
         # write the new substractive gcode file with '_split' added to its name:
         name = self.config['InputFiles']['subtractive_gcode']
