@@ -107,7 +107,7 @@ class Parser:
             self.gcode_add = gcode_add_file.read()
 
         with open(config['InputFiles']['subtractive_gcode'], 'r') as gcode_sub_file:
-            self.gcode_sub = gcode_sub_file.read()
+            #self.gcode_sub = gcode_sub_file.read()
             #<JLC4>: rwind the file to get all the lines:
             gcode_sub_file.seek(0)
             self.gcode_sub_lines = gcode_sub_file.readlines()
@@ -136,14 +136,14 @@ class Parser:
         blocs_to_split = self.split_gcode_file_stage1()
         splitted_gcode = self.split_gcode_file_stage2(blocs_to_split)
         
-        # write the new substractive gcode file:
+        # write the new substractive gcode file with '_split' added to its name:
         name = self.config['InputFiles']['subtractive_gcode']
         new_sub_gcode_file_name = name.replace('.gcode','') + '_split.gcode'
-        with open(new_sub_gcode_file_name, 'a') as F:
+        with open(new_sub_gcode_file_name, 'w') as F:
             F.write(splitted_gcode)
             
-        # Now rebuild the self.gcode_sub :
-        return ''.join(splitted_gcode)
+        # Now returns all the lines:
+        return splitted_gcode
         
         # That's all...
                     
@@ -263,7 +263,10 @@ class Parser:
             splitted_gcode += ''.join(self.gcode_sub_lines[start_line_number:first_line_bloc])
 
             # TODO
-            if abs(Zmax - Zmin) <= zRangeMax3Dsurfacing_mm: break
+            if abs(Zmax - Zmin) <= zRangeMax3Dsurfacing_mm: 
+                # no need to split the CAM operation
+                splitted_gcode += ''.join(self.gcode_sub_lines[first_line_bloc:end_line_bloc])
+                break
            
             first_split = True
             
@@ -320,10 +323,13 @@ class Parser:
                                     
                                     # come back to the while loop:
                                     break      
+                                
                 if Z_increase is not None:     
                     if (Z_increase and Z == Zmax) or (not Z_increase and Z == Zmin): 
                         break
+                    
             start_line_number = end_line_bloc
+            
         splitted_gcode += ''.join(self.gcode_sub_lines[end_line_bloc:])
         return splitted_gcode
     #</JLC4>
