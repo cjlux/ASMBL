@@ -70,6 +70,13 @@ class Parser:
             progress.progressValue += 1
         self.gcode_add_layers = self.split_additive_layers(self.gcode_add)
 
+        #<JLC4>
+        print('Pre-processing subtractive gcode file...')
+        if progress:
+            progress.message = 'Preprocessing subtractive gcode file'
+            progress.progressValue += 1
+        self.gcode_sub = self.preprocess_sub_gcode_file()
+
         print('Spliting subtractive gcode layers...')
         if progress:
             progress.message = 'Spliting subtractive gcode layers'
@@ -101,6 +108,10 @@ class Parser:
 
         with open(config['InputFiles']['subtractive_gcode'], 'r') as gcode_sub_file:
             self.gcode_sub = gcode_sub_file.read()
+            #<JLC4>: rwind the file to get all the lines:
+            gcode_sub_file.seek(0)
+            self.gcode_sub_lines = gcode_sub_file.readlines()
+            #</JLC4>
             
     #<JLC>
     def appendSub2AddGcode(self):
@@ -109,6 +120,214 @@ class Parser:
         return self.gcode_add + self.gcode_sub
     #</JLC>
 
+    #<JLC4>
+    
+    def preprocess_sub_gcode_file(self):
+        '''
+        To split surfacing operations with a large Z range into smaller overlapping surfacing 
+        operations each covering a small Z range.
+        This method:
+        - reads the whole substractive GCode file to get all the lines
+        - looks for lines beginning with the TAG "(strategy: parallel_new)"
+        For each bloc beginning with TAG and ending with a blank line ('\n'), the gcode  
+        lines are grouped by sub-blocs with a z range <= zRangeMax3Dsurfacing_mm, 
+        overlapping each other with zOverlap3Dsurfacing_mm.
+        '''
+        blocs_to_split = self.split_gcode_file_stage1()
+        splitted_gcode = self.split_gcode_file_stage2(blocs_to_split)
+        
+        # write the new substractive gcode file:
+        name = self.config['InputFiles']['subtractive_gcode']
+        new_sub_gcode_file_name = name.replace('.gcode','') + '_split.gcode'
+        with open(new_sub_gcode_file_name, 'a') as F:
+            F.write(splitted_gcode)
+            
+        # Now rebuild the self.gcode_sub :
+        return ''.join(splitted_gcode)
+        
+        # That's all...
+                    
+    def split_gcode_file_stage1(self):
+        
+        bloc_to_split= {}
+        num_bloc = 0
+        bloc_found = False
+
+        STRATEGY = '(strategy: parallel_new)'
+
+        # scan the GCode lines to catch the target:
+        for i, line in enumerate(self.gcode_sub_lines, 1):
+            if STRATEGY in line:
+                start_bloc = i-2
+                name = self.gcode_sub_lines[start_bloc]
+                bloc_to_split[num_bloc] = {'strategy': f'{STRATEGY}\n',
+                                           'name': name, 
+                                           'header': '',
+                                           'start_bloc': start_bloc, 
+                                           'needs_header': False}
+                bloc_found, cutting, first_cutting_line = True, False, None
+                Zmin = None
+                header = ''
+                num_sub_bloc = 0
+                continue
+           
+            if line == '\n':
+                # This is the end of a "(strategy: ...)"" CAM bloc, save the bloc data
+                if bloc_found:
+                    bloc_to_split[num_bloc]['header']   = header
+                    bloc_to_split[num_bloc]['ZMinMax']  = (Zmin, Zmax)
+                    bloc_to_split[num_bloc]['end_bloc'] = i
+                    
+                    num_bloc += 1
+                    bloc_found, cutting, first_cutting_line = False, False, None
+                continue
+           
+            if bloc_found:
+                if line.startswith('T') or line.startswith('M'):
+                    # add lines like "T1" and "M3 S14000" to header:
+                    header += line
+                    
+                elif line.startswith('(type: cutting)'):
+                    cutting = True
+                    if first_cutting_line is None:
+                        first_cutting_line = i-1
+                        bloc_to_split[num_bloc]['first_cutting_line'] = first_cutting_line
+                       
+                elif line[:2] == 'G0':
+                    prev_line = self.gcode_sub_lines[i-2]
+                    next_line = self.gcode_sub_lines[i]
+                    if prev_line.startswith('(type:') and next_line != '\n':
+                        # A new surfacing phase takes place: we wil create a new sub-bloc
+                        # with "(strategy: ...)"
+                        # 1/ Save the data of the current bloc
+                        bloc_to_split[num_bloc]['header']   = header
+                        bloc_to_split[num_bloc]['ZMinMax']  = (Zmin, Zmax)
+                        bloc_to_split[num_bloc]['end_bloc'] = i-3
+                        # 2/ Prepare the new bloc
+                        num_bloc += 1
+                        num_sub_bloc +=1
+                        start_bloc = i-2
+                        new_name = name.strip()[:-1] + f'-{num_sub_bloc})\n'
+                        
+                        bloc_to_split[num_bloc] = {'strategy': f'{STRATEGY}\n', 
+                                                   'name': new_name, 
+                                                   'header': header,
+                                                   'start_bloc': start_bloc, 
+                                                   'needs_header': True}
+                        bloc_found, cutting = True, False
+                        first_cutting_line, Zmin = None, None
+                                         
+                elif cutting and line[:2] == 'G1':
+                    # Extract Z from a line in a 'cutting' zone like: 
+                    # "G1 X100.202 Y108.725 Z2.083 F924"
+                    Z = float(line.strip().split()[3][1:])
+                    if Zmin is None: 
+                        Zmin, Zmax = Z, Z
+                    if Z < Zmin:
+                        Zmin = Z
+                    elif Z > Zmax:
+                        Zmax = Z
+                else:
+                    cutting = False
+                        
+        return bloc_to_split
+        
+    def split_gcode_file_stage2(self, blocs_to_split):
+ 
+        # Now process each surfacing CAM operation to plit it into overlapping smaller 
+        # surfacing operations.
+    
+        zRangeMax3Dsurfacing_mm = self.config['CamSettings']['zRangeMax_3Dsurfacing_mm']
+        zOverlap3Dsurfacing_mm  = self.config['CamSettings']['zOverlap_3Dsurfacing_mm']
+
+        splitted_gcode = ""
+        start_line_number = 0
+
+        for key in blocs_to_split:
+            bloc = blocs_to_split[key]           
+            print(f"Processing bloc {key}\n"
+                  f"\t(start, end):{(bloc['start_bloc'], bloc['end_bloc'])}\n"
+                  f"\tname:{repr(bloc['name'])}, needs_header:{bloc['needs_header']}\n"
+                  f"\theader:{repr(bloc['header'])}\n"
+                  f"\tstrategy:{repr(bloc['strategy'])}\n",
+                  f"\t(Zmin, Zmax):{(bloc['ZMinMax'])}\n")
+            first_line_bloc, end_line_bloc = bloc['first_cutting_line'], bloc['end_bloc']
+            Zmin, Zmax = bloc['ZMinMax']
+           
+            # Fill splitted_gcode with the Gcode lines until the firts line of the bloc:
+            if bloc['needs_header']:
+                splitted_gcode += bloc['name']
+                splitted_gcode += bloc['strategy']
+                splitted_gcode += bloc['header']
+              
+            splitted_gcode += ''.join(self.gcode_sub_lines[start_line_number:first_line_bloc])
+
+            # TODO
+            if abs(Zmax - Zmin) <= zRangeMax3Dsurfacing_mm: break
+           
+            first_split = True
+            
+            while(True):
+                Z, prevZ, Z1, Z2, L1, L2, next_L1 = None, None, None, None, None, None, None
+                cutting, Z_increase = False, None
+            
+                # Every loop turn allows to build one of the overlapping bloc:
+                for i, line in enumerate(self.gcode_sub_lines[first_line_bloc:end_line_bloc], first_line_bloc):
+                 
+                    if not cutting and line.startswith('(type: cutting)'):
+                        cutting = True
+                        continue   
+                                  
+                    elif cutting and line.startswith('('):
+                        cutting = False
+                        continue
+                 
+                    if cutting: 
+                        if line[:2] == 'G1': 
+                            Z = float(line.strip().split()[3][1:])
+                            if prevZ is not None:
+                                # JLC : Fusion BUG : sometime we find 2 consecive G1 lines with a differnce
+                                #       between the 2 Z  of about 0.001 mm...
+                                if abs(Z - prevZ) <= 0.001: continue                              
+                                if Z > prevZ: 
+                                    Z_increase = True
+                                elif Z < prevZ:
+                                    Z_increase = False
+                            else:
+                                prevZ = Z
+
+                            if Z1 == None :
+                                Z1, L1 = Z, i
+                            else:
+                                if next_L1 == None:
+                                    if abs(Z1 - Z) >= (zRangeMax3Dsurfacing_mm - zOverlap3Dsurfacing_mm):
+                                        next_L1 = i
+                                if (abs(Z1 - Z) >= zRangeMax3Dsurfacing_mm) or (Z_increase and Z == Zmax) or (not Z_increase and Z == Zmin):
+                                    Z2, L2 = Z, i
+                                    print(f"(Z1,Z2):({Z1:.3f},{Z2:.3f}), (L1,L2)={(L1,L2)}")
+                                    if first_split == False:
+                                        splitted_gcode += bloc['name']
+                                        splitted_gcode += bloc['strategy']
+                                        splitted_gcode += bloc['header']
+                                    splitted_gcode += ''.join(self.gcode_sub_lines[first_line_bloc:L2+1])
+                                    splitted_gcode += '\n'
+                                    
+                                    if first_split: first_split = False
+                                 
+                                    # Ready to build the surfacing bloc.
+                                    # Normally the new bloc to process overlaps the current bloc
+                                    if next_L1 is not None: first_line_bloc = next_L1 + 1
+                                    
+                                    # come back to the while loop:
+                                    break      
+                if Z_increase is not None:     
+                    if (Z_increase and Z == Zmax) or (not Z_increase and Z == Zmin): 
+                        break
+            start_line_number = end_line_bloc
+        splitted_gcode += ''.join(self.gcode_sub_lines[end_line_bloc:])
+        return splitted_gcode
+    #</JLC4>
+    
     def split_additive_layers(self, gcode_add):
         """ Takes Simplify3D gcode and splits in by layer """
         tmp_list = re.split('(; layer)', gcode_add)
@@ -178,7 +397,8 @@ class Parser:
         """
         start_index = cutting_group[0].index
         pre_index = start_index - 1 if start_index - 1 >= 0 else start_index
-        if segments[pre_index].type in ('lead in', 'plunge'):
+        # <JLC-4> Add 'transition'
+        if segments[pre_index].type in ('lead in', 'plunge', 'transition'):
             start_index = pre_index
 
         # warn user if a bad linking setting are detected
@@ -187,11 +407,12 @@ class Parser:
 
         end_index = cutting_group[-1].index
         post_index = end_index + 1 if end_index + 1 <= len(segments) - 1 else end_index
-        if segments[post_index].type == 'lead out':
+        # <JLC-4> Add 'transition'
+        if segments[post_index].type in ('lead out', 'transistion'):
             end_index = post_index
 
         return segments[start_index:end_index+1]
-
+    
     def group_cam_segments(self, segments, name, strategy, tool, start_tool):
         """
         Group all cutting segments with a continuous and equal cutting height, including all intermediary segments.
@@ -207,9 +428,11 @@ class Parser:
         for cutting_segment in cutting_segments[1:]:
             # TODO logic needs fixing to deal with non planar and planar segments in same operation
             #<JLC>
-            # 1/ was: if cutting_segment.height == cutting_height or cutting_segment.planar is False or len(cutting_segment.lines) == 1:
-            # 2/ was: if cutting_segment.height == cutting_height or cutting_segment.planar is False:
-            if cutting_segment.height == cutting_height:
+            # was: if cutting_segment.height == cutting_height or cutting_segment.planar is False or len(cutting_segment.lines) == 1:
+            # was: if cutting_segment.height == cutting_height or cutting_segment.planar is False:
+            # Finally return to original test...
+            #<JLC4> : ajout de <or strategy in ('parallel_new',)>
+            if cutting_segment.height == cutting_height or cutting_segment.planar is False or strategy in ('parallel_new',):
             #</JLC>
                 cutting_group.append(cutting_segment)
                 cutting_height = cutting_segment.height
@@ -329,8 +552,11 @@ class Parser:
     def merge_gcode_layers(self, gcode_add, cam_layers):
         """ Takes the individual CAM instructions and merges them into the additive file from Simplify3D """
         for cam_layer in cam_layers:
-            #<JLC>
-            self.add_retracts(cam_layer, 10)  # second argument was by default
+            #<JLC-4> : don't add retracts if srategy is 'parallel_new':
+            if cam_layer.strategy in ('parallel_new'):
+                pass
+            else:
+                self.add_retracts(cam_layer, 10)  # second argument was by default
             #</JLC>
 
         merged_gcode = gcode_add + cam_layers

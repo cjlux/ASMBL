@@ -1,5 +1,6 @@
 gcode*
 .vscode
+sandBox/
 
 # 3D files
 *.gcode

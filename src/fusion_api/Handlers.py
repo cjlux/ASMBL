@@ -416,8 +416,8 @@ class PostProcessExecuteHandler(adsk.core.CommandEventHandler):
             "CamSettings": {
                 "layer_overlap": layerOverlap,
                 "layer_dropdown": layerDropdown,
-                "3D_z_range_mm": zRangeMax3Dsurfacing_mm,
-                "3D_z_overlap_mm": zOverlap3Dsurfacing_mm 
+                "zRangeMax_3Dsurfacing_mm": zRangeMax3Dsurfacing_mm,
+                "zOverlap_3Dsurfacing_mm": zOverlap3Dsurfacing_mm 
             },
             "OutputSettings": {
                 "filename": outputName
