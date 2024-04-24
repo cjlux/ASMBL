@@ -108,7 +108,7 @@ class Parser:
             self.gcode_add = gcode_add_file.read()
 
         with open(config['InputFiles']['subtractive_gcode'], 'r') as gcode_sub_file:
-            self.gcode_sub = gcode_sub_file.read()
+            #self.gcode_sub = gcode_sub_file.read()
             #<JLC4>: rwind the file to get all the lines:
             gcode_sub_file.seek(0)
             self.gcode_sub_lines = gcode_sub_file.readlines()
@@ -134,13 +134,21 @@ class Parser:
         lines are grouped by sub-blocs with a z range <= zRangeMax3Dsurfacing_mm, 
         overlapping each other with zOverlap3Dsurfacing_mm.
         '''
-        blocs_to_split = self.split_gcode_file_stage1()
+        
+        # write debug info in a log file:
+        outputFolder = os.path.expanduser('~/Asmbl/output/')
+        fileName = self.config['OutputSettings']['filename'] + '.log'
+        log_file_name = os.path.join(outputFolder, fileName)
+        if os.path.exists(log_file_name):
+            os.remove(log_file_name)
+
+        blocs_to_split = self.split_gcode_file_stage1(log_file_name)
         
         if len(blocs_to_split) == 0:
             # nothing to do...
             splitted_gcode = ''.join(self.gcode_sub_lines)
         else:
-            splitted_gcode = self.split_gcode_file_stage2(blocs_to_split)
+            splitted_gcode = self.split_gcode_file_stage2(blocs_to_split, log_file_name)
         
         # write the new substractive gcode file with '_split' added to its name:
         name = self.config['InputFiles']['subtractive_gcode']
@@ -158,7 +166,16 @@ class Parser:
         
         # That's all...
                     
-    def split_gcode_file_stage1(self):
+    def log_message(self, message, log_file_path):
+        
+        with open(log_file_path, 'a') as Log:
+            Log.write(message)
+            if message[-1] != '\n':
+                Log.write('\n')
+            Log.flush()
+        Log.close()
+        
+    def split_gcode_file_stage1(self, log_file_path):
         
         bloc_to_split= {}
         num_bloc = 0
@@ -246,7 +263,7 @@ class Parser:
                         
         return bloc_to_split
         
-    def split_gcode_file_stage2(self, blocs_to_split):
+    def split_gcode_file_stage2(self, blocs_to_split, log_file_path):
  
         # Now process each surfacing CAM operation to plit it into overlapping smaller 
         # surfacing operations.
@@ -254,17 +271,22 @@ class Parser:
         zRangeMax3Dsurfacing_mm = self.config['CamSettings']['zRangeMax_3Dsurfacing_mm']
         zOverlap3Dsurfacing_mm  = self.config['CamSettings']['zOverlap_3Dsurfacing_mm']
 
+        mess = f"zRangeMax3Dsurfacing_mm: {zRangeMax3Dsurfacing_mm}, zOverlap3Dsurfacing_mm: {zOverlap3Dsurfacing_mm}"
+        self.log_message(mess, log_file_path)
+
         splitted_gcode = ""
         start_line_number = 0
 
         for key in blocs_to_split:
-            bloc = blocs_to_split[key]           
-            print(f"Processing bloc {key}\n"
-                  f"\t(start, end):{(bloc['start_bloc'], bloc['end_bloc'])}\n"
-                  f"\tname:{repr(bloc['name'])}, needs_header:{bloc['needs_header']}\n"
-                  f"\theader:{repr(bloc['header'])}\n"
-                  f"\tstrategy:{repr(bloc['strategy'])}\n",
-                  f"\t(Zmin, Zmax):{(bloc['ZMinMax'])}\n")
+            bloc = blocs_to_split[key]         
+            mess = f"Processing bloc {key}\n"
+            f"\t(start, end):{(bloc['start_bloc'], bloc['end_bloc'])}\n"
+            f"\tname:{repr(bloc['name'])}, needs_header:{bloc['needs_header']}\n"
+            f"\theader:{repr(bloc['header'])}\n"
+            f"\tstrategy:{repr(bloc['strategy'])}\n",
+            f"\t(Zmin, Zmax):{(bloc['ZMinMax'])}\n"
+            self.log_message(mess, log_file_path); print(mess)
+            
             first_line_bloc, end_line_bloc = bloc['first_cutting_line'], bloc['end_bloc']
             Zmin, Zmax = bloc['ZMinMax']
            
@@ -322,7 +344,8 @@ class Parser:
                                         next_L1 = i
                                 if (abs(Z1 - Z) >= zRangeMax3Dsurfacing_mm) or (Z_increase and Z == Zmax) or (not Z_increase and Z == Zmin):
                                     Z2, L2 = Z, i
-                                    print(f"(Z1,Z2):({Z1:.3f},{Z2:.3f}), (L1,L2)={(L1,L2)}")
+                                    mess = f"(Z1,Z2):({Z1:.3f},{Z2:.3f}), (L1,L2)={(L1,L2)}" 
+                                    self.log_message(mess, log_file_path); print(mess)
                                     if first_split == False:
                                         splitted_gcode += bloc['name']
                                         splitted_gcode += bloc['strategy']
