@@ -1,7 +1,7 @@
 {
     "InputFiles": {
-        "additive_gcode": "gcode/tmpAdditive_ramp.gcode",
-        "subtractive_gcode": "gcode/tmpSubtractive_ramp.gcode"
+        "additive_gcode": "gcode/tmpAdditive_pyramide_bug4_3.gcode",
+        "subtractive_gcode": "gcode/tmpSubtractive_pyramide_bug4_3.gcode"
     },
     "Printer": {
         "bed_centre_x": 0,
@@ -13,11 +13,11 @@
     "CamSettings": {
         "layer_overlap": 3,
         "layer_dropdown": 0,
-        "z_range_3D_mm": 2,
-        "z_overlap_3D_mm": 1 
+        "zRangeMax_3Dsurfacing_mm": 5,
+        "zOverlap_3Dsurfacing_mm": 0.5
     },
     "OutputSettings": {
-        "filename": "tmp"
+        "filename": "tmp-bug4_3"
     },
     "Flags": {
         "append_AddSubGcode": 0
