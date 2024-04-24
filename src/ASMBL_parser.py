@@ -270,7 +270,6 @@ class Parser:
     
         zRangeMax3Dsurfacing_mm = self.config['CamSettings']['zRangeMax_3Dsurfacing_mm']
         zOverlap3Dsurfacing_mm  = self.config['CamSettings']['zOverlap_3Dsurfacing_mm']
-        layer_overlap = self.config['CamSettings']['layer_overlap']
 
         mess = f"zRangeMax3Dsurfacing_mm: {zRangeMax3Dsurfacing_mm}, zOverlap3Dsurfacing_mm: {zOverlap3Dsurfacing_mm}, layer_overlap:{layer_overlap}"
         self.log_message(mess, log_file_path)

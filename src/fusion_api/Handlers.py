@@ -347,8 +347,8 @@ class PostProcessExecuteHandler(adsk.core.CommandEventHandler):
         outputName = inputs.itemById('outputName').text
         #<JLC>
         appendAddSubGcode = inputs.itemById('appendAddSubGcode').value
-        zRangeMax3Dsurfacing_mm = inputs.itemById('zRange3Dmm').value
-        zOverlap3Dsurfacing_mm = inputs.itemById('zOverlap3Dmm').value
+        zRangeMax3Dsurfacing_mm = inputs.itemById('zRange3Dmm').value*10
+        zOverlap3Dsurfacing_mm = inputs.itemById('zOverlap3Dmm').value*10
         #</JLC>
 
         doc = app.activeDocument
