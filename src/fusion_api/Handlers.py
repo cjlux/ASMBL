@@ -299,7 +299,7 @@ class PostProcessCreatedEventHandler(adsk.core.CommandCreatedEventHandler):
             
             #<JLC>
             zRangeMax_3Dsurfacing_mm = groupCamChildInputs.addFloatSpinnerCommandInput(
-                'zRange3Dmm', 'zRangeMax 3D surfacing', 'mm', 0, 100, 0.1, 2)
+                'zRange3Dmm', 'zRangeMax 3D surfacing', 'mm', 0, 6, 0.1, 5)
             zRangeMax_3Dsurfacing_mm.tooltip = 'the max range [mm] of 3D surfacing above which operation is spllited'
             zRangeMax_3Dsurfacing_mm.tooltipDescription = '\
                 <br>This alters the toolpath and when it hapens</br>\
@@ -310,7 +310,7 @@ class PostProcessCreatedEventHandler(adsk.core.CommandCreatedEventHandler):
                 Path(__file__).parents[2], 'resources', 'GenerateAsmbl', 'tooltip_dropdown.png')
             
             zOverlap_3Dsurfacing_mm = groupCamChildInputs.addFloatSpinnerCommandInput(
-                'zOverlap3Dmm', 'Splitting Z overlap', 'mm', 0, 5, 0.1, 1)
+                'zOverlap3Dmm', 'Splitting Z overlap', 'mm', 0, 1, 0.05, 5)
             zOverlap_3Dsurfacing_mm.tooltip = 'the overlaping of splitted 3D surfacing operations'
             zOverlap_3Dsurfacing_mm.tooltipDescription = '\
                 <br>This alters the toolpath and when it hapens</br>\

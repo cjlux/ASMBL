@@ -76,6 +76,7 @@ class Parser:
             progress.message = 'Preprocessing subtractive gcode file'
             progress.progressValue += 1
         self.gcode_sub = self.preprocess_sub_gcode_file()
+        #</JLC>
 
         print('Spliting subtractive gcode layers...')
         if progress:
@@ -296,7 +297,8 @@ class Parser:
                             if prevZ is not None:
                                 # JLC : Fusion BUG : sometime we find 2 consecive G1 lines with a differnce
                                 #       between the 2 Z  of about 0.001 mm...
-                                if abs(Z - prevZ) <= 0.001: continue                              
+                                if abs(Z - prevZ) <= 0.001: 
+                                    continue                              
                                 if Z > prevZ: 
                                     Z_increase = True
                                 elif Z < prevZ:
