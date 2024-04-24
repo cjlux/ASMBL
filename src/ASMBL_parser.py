@@ -181,7 +181,7 @@ class Parser:
                 num_sub_bloc = 0
                 continue
            
-            if line == '\n':
+            if i == len(self.gcode_sub_lines) or line == '\n':
                 # This is the end of a "(strategy: ...)"" CAM bloc, save the bloc data
                 if bloc_found:
                     bloc_to_split[num_bloc]['header']   = header
@@ -475,6 +475,7 @@ class Parser:
         operations = []
 
         for i, operation in enumerate(tmp_operation_list):
+            if operation == '': break
             unlabelled_lines = operation.split('\n')
             name = unlabelled_lines.pop(0)
             strategy = unlabelled_lines.pop(0)[11:].strip(')')
