@@ -76,7 +76,7 @@ class Parser:
             progress.message = 'Preprocessing subtractive gcode file'
             progress.progressValue += 1
         self.gcode_sub = self.preprocess_sub_gcode_file()
-        #</JLC>
+        #</JLC4>
 
         print('Spliting subtractive gcode layers...')
         if progress:
@@ -205,7 +205,10 @@ class Parser:
                        
                 elif line[:2] == 'G0':
                     prev_line = self.gcode_sub_lines[i-2]
-                    next_line = self.gcode_sub_lines[i]
+                    if i <  len(self.gcode_sub_lines) :
+                        next_line = self.gcode_sub_lines[i]
+                    else:
+                        next_line = '\n'
                     if prev_line.startswith('(type:') and next_line != '\n':
                         # A new surfacing phase takes place: we wil create a new sub-bloc
                         # with "(strategy: ...)"
