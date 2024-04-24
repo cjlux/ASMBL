@@ -310,7 +310,7 @@ class PostProcessCreatedEventHandler(adsk.core.CommandCreatedEventHandler):
                 Path(__file__).parents[2], 'resources', 'GenerateAsmbl', 'tooltip_dropdown.png')
             
             zOverlap_3Dsurfacing_mm = groupCamChildInputs.addFloatSpinnerCommandInput(
-                'zOverlap3Dmm', 'Splitting Z overlap', 'mm', 0, 1, 0.05, 5)
+                'zOverlap3Dmm', 'Splitting Z overlap', 'mm', 0, 1, 0.05, 0.5)
             zOverlap_3Dsurfacing_mm.tooltip = 'the overlaping of splitted 3D surfacing operations'
             zOverlap_3Dsurfacing_mm.tooltipDescription = '\
                 <br>This alters the toolpath and when it hapens</br>\
