@@ -151,6 +151,7 @@ class Parser:
             
         with open(new_sub_gcode_file_name, 'w') as F:
             F.write(splitted_gcode)
+        F.close()
             
         # Now returns all the lines:
         return splitted_gcode
