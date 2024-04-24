@@ -145,6 +145,10 @@ class Parser:
         # write the new substractive gcode file with '_split' added to its name:
         name = self.config['InputFiles']['subtractive_gcode']
         new_sub_gcode_file_name = name.replace('.gcode','') + '_split.gcode'
+        
+        if os.path.exists(new_sub_gcode_file_name):
+            os.remove(new_sub_gcode_file_name)
+            
         with open(new_sub_gcode_file_name, 'w') as F:
             F.write(splitted_gcode)
             
