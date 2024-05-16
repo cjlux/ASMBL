@@ -59,7 +59,7 @@ def create_button(workspace, tab, panel, button_name, CreatedEventHandler, toolt
     button.commandCreated.add(newcommandCreated)
     handlers.append(newcommandCreated)
 
-    # Add setup button to ASMBL setup panel
+    # Add setup button to N-Fab setup panel
     panelControls = panel.controls
     buttonControl = panelControls.itemById(buttonId)
     if not buttonControl:
@@ -97,15 +97,15 @@ def run(context):
         # Get the CAM workspace:
         camWorkspace = allWorkspaces.itemById('CAMEnvironment')
 
-        AsmblTab = create_tab(camWorkspace, 'Asmbl')
+        AsmblTab = create_tab(camWorkspace, 'N-Fab')
         # asmblSetupPanel = create_panel(camWorkspace, AsmblTab, 'Setup')
         
         asmblActionsPanel = create_panel(camWorkspace, AsmblTab, 'Actions')
 
-        # asmbl post process button
+        # N-Fab post process button
         asmblPostProcessControl = create_button(camWorkspace, AsmblTab, asmblActionsPanel,
-                                     'Generate ASMBL Script', Handlers.PostProcessCreatedEventHandler,
-                                     tooltip='Generate combined gcode file for ASMBL',
+                                     'Generate N-Fab Script', Handlers.PostProcessCreatedEventHandler,
+                                     tooltip='Generate combined gcode file for N-Fab',
                                      resources='./resources/GenerateAsmbl')
         asmblPostProcessControl.isPromotedByDefault = True
         asmblPostProcessControl.isPromoted = True
@@ -117,12 +117,12 @@ def run(context):
         # cam post process button
         camPostProcessControl = create_button(camWorkspace, AsmblTab, asmblActionsPanel,
                                      'Post Process CAM', Handlers.PostProcessCamCreatedEventHandler,
-                                     tooltip='Generate subtractive gcode file for ASMBL',
+                                     tooltip='Generate subtractive gcode file for N-Fab',
                                      resources='./resources/PostProcess')
         camPostProcessControl.isPromotedByDefault = False
         camPostProcessControl.isPromoted = False
         camPostProcessControl.commandDefinition.tooltipDescription = '\
-            <br>Post process all unsuppressed milling setups for the standalone ASMBL program</br>'
+            <br>Post process all unsuppressed milling setups for the standalone N-Fab program</br>'
 
     except:
         if ui:

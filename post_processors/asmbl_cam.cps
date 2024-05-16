@@ -10,12 +10,12 @@
   FORKID {B36C05D8-D948-4BC2-9620-A9FDE5D36CB3}
 */
 
-description = "ASMBL CAM";
-vendor = "ASMBL";
+description = "N-Fab CAM";
+vendor = "N-Fab";
 certificationLevel = 2;
 minimumRevision = 24000;
 
-longDescription = "Generic milling post ASMBL.";
+longDescription = "Generic milling post N-Fab.";
 
 extension = "gcode";
 setCodePage("ascii");

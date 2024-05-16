@@ -1,2 +1,2 @@
 exe:
-	pyinstaller main.py --onefile --name ASMBL
+	pyinstaller main.py --onefile --name N-Fab

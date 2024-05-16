@@ -10,12 +10,12 @@
   FORKID {A316FBC4-FA6E-41C5-A347-3D94F72F5D06}
 */
 
-description = "ASMBL FFF";
-vendor = "ASMBL";
+description = "N-Fab FFF";
+vendor = "N-Fab";
 certificationLevel = 2;
 minimumRevision = 45633;
 
-longDescription = "Simple post to export toolpath for generic FFF Machine in gcode format for ASMBL";
+longDescription = "Simple post to export toolpath for generic FFF Machine in gcode format for N-Fab";
 
 extension = "gcode";
 setCodePage("ascii");
@@ -202,7 +202,7 @@ function onLinearExtrude(_x, _y, _z, _f, _e) {
   }
 }
 
-// Temp controller not needed for ASMBL
+// Temp controller not needed for N-Fab
 function onBedTemp(temp, wait) {
   if (wait) {
     writeBlock(mFormat.format(190), sOutput.format(temp));
@@ -244,7 +244,7 @@ function onLayer(num) {
   writeComment("layer " + integerFormat.format(num) + " of " + integerFormat.format(layerCount) + ",");  // comment format to match Simplify3D
 }
 
-// Temp controller not needed for ASMBL
+// Temp controller not needed for N-Fab
 // function onExtruderTemp(temp, wait, id) {
 //   if (id < numberOfExtruders) {
 //     if (wait) {

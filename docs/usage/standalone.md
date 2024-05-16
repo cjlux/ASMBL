@@ -2,7 +2,7 @@
 
 # Simplify3D
 
-* Open the `ASMBL.factory` file
+* Open the `N-Fab.factory` file
 * Import the STL file
 * Orient the part in the desired orientation
 * Click `Center and Arrange`
@@ -14,7 +14,7 @@
 
 Tab | Setting | Default | Effect | Other Notes
 --- | ------- | ------- | ------ | -----------
-Layer | Primary Layer Height | `0.3` | Layer height of the print | Thicker layers can create smoother surfaces with ASMBL (requires further testing). Layers less than 0.2 mm should be avoided
+Layer | Primary Layer Height | `0.3` | Layer height of the print | Thicker layers can create smoother surfaces with N-Fab (requires further testing). Layers less than 0.2 mm should be avoided
 Additions | Use Raft | `Enabled` | Prevents cutting into bed
 Other | Horizontal size compensation | `0.25` | Amount of horizontal cut-in | Any dimension that is not CAM'd will be this much too large. **This is not needed if offsetting the geometery in Fusion360**
 

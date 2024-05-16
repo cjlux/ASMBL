@@ -2,12 +2,12 @@
 
 # Setting up the code for standalone/modification
 
-This only needs to be done if you want to modify the source code. Otherwise the `ASMBL.exe` can be used to eliminate the setup of the program.
+This only needs to be done if you want to modify the source code. Otherwise the `N-Fab.exe` can be used to eliminate the setup of the program.
 
 **Windows**
 ```bash
 git clone https://github.com/AndyEveritt/ASMBL.git
-cd ASMBL
+cd N-Fab
 py -m venv env
 source env/Scripts/activate
 pip install -r requirements.txt

@@ -16,7 +16,7 @@ def arg_parser_json(arg):
 
 if __name__ == "__main__":
 
-    arg_parser = argparse.ArgumentParser(description='ASMBL Code Creation Tool')
+    arg_parser = argparse.ArgumentParser(description='N-Fab Code Creation Tool')
     arg_parser.add_argument('--config', '-C', type=arg_parser_json, default='config.json',
                             metavar='FILE', help='path to json config file')
 

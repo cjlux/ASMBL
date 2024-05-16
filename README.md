@@ -1,12 +1,12 @@
-<img src="resources/Asmbl/Asmbl_banner.jpg">
+<img src="resources/N-Fab/Asmbl_banner.jpg">
 
 # Overview
 
-This code is designed to create a gcode file suitable for Additive & Subtractive Manufacturing By Layer (ASMBL).
+This code is designed to create a gcode file suitable for Additive & Subtractive Manufacturing By Layer (N-Fab).
 
-## What is ASMBL? 
+## What is N-Fab? 
 
-ASMBL is a manufacturing technique which combines FDM 3D printing with traditional milling. 
+N-Fab is a manufacturing technique which combines FDM 3D printing with traditional milling. 
 
 The additive and subtractive tools are alternated throughout the print so that milling of otherwise impossible to reach features is now possible. 
 
@@ -14,7 +14,7 @@ The additive and subtractive tools are alternated throughout the print so that m
 
 [E3D Toolchanger Milling Tool - Thingiverse](https://www.thingiverse.com/thing:4206827)
 
-https://e3d-online.com/blogs/news/asmbl
+https://e3d-online.com/blogs/news/N-Fab
 
 ## What does the repo do? 
 
@@ -28,7 +28,7 @@ This merging is also compatible with non-planar milling operations that occur ov
 There are 2 main ways this repo can be used.
 
 - As a standalone program that takes 2 input files
-  - An additive`.gcode` file from Simplify3D using the `ASMBL.factory` file to get the appropriate settings.
+  - An additive`.gcode` file from Simplify3D using the `N-Fab.factory` file to get the appropriate settings.
   - A subtractive `.gcode` file from Fusion360.
   - These files require specific setup for this program to work
 - As a **Fusion 360 add-in** where the **ENTIRE** workflow from designing the part to getting the merged gcode is in Fusion 360
@@ -38,7 +38,7 @@ The Fusion 360 add-in is the recommended option however the slicer is new and no
 
 ![Fusion add-in demo](docs/images/asmbl_demo.gif)
 
-For the standalone program, download the latest release for the `ASMBL.exe`, an example `config.json`, and the Simplify3D factory file.
+For the standalone program, download the latest release for the `N-Fab.exe`, an example `config.json`, and the Simplify3D factory file.
 
 <br>
 <br>
@@ -87,7 +87,7 @@ For the standalone program, download the latest release for the `ASMBL.exe`, an 
 Unzip the repo in your desired folder location or clone the repo:
 
 ```bash
-git clone https://github.com/AndyEveritt/ASMBL.git
+git clone https://github.com/AndyEveritt/N-Fab.git
 ```
 
 - Open Fusion360
@@ -96,11 +96,11 @@ git clone https://github.com/AndyEveritt/ASMBL.git
 
 <img src="docs/installation/images/fusion_add_existing.png" width=480>
 
-- Navigate to the ASMBL repo location and select the folder
+- Navigate to the N-Fab repo location and select the folder
 
 <img src="docs/installation/images/fusion_select_location.png" width=480>
 
-- Select the ASMBL add-in from the list, click `Run on Startup`, then `Run`
+- Select the N-Fab add-in from the list, click `Run on Startup`, then `Run`
 
 <img src="docs/installation/images/fusion_run.png" width=240>
 
@@ -117,11 +117,11 @@ This can be done by:
 
 ## Setting up the code for standalone use (Simplify3D)
 
-Download the following files from the [releases](https://github.com/AndyEveritt/ASMBL/releases) page:
+Download the following files from the [releases](https://github.com/AndyEveritt/N-Fab/releases) page:
 
-- `ASMBL.exe`
+- `N-Fab.exe`
 - `config.json`
-- `ASMBL.factory`
+- `N-Fab.factory`
 
 Ensure the config and exe are in the same folder for the program to run.
 
@@ -181,9 +181,9 @@ First you need to create an offset of your model, this will control how much cut
 - Enter the `Additive` Tab in the `Manufacturing` workspace in Fusion360.
 - Create a new setup
   - Click `Select` Machine
-  - Import the [`E3D - Tool Changer.machine`](https://github.com/AndyEveritt/ASMBL/blob/master/settings/E3D%20-%20Tool%20Changer.machine) profile from the [`settings`](https://github.com/AndyEveritt/ASMBL/tree/master/settings) folder of this repo
+  - Import the [`E3D - Tool Changer.machine`](https://github.com/AndyEveritt/N-Fab/blob/master/settings/E3D%20-%20Tool%20Changer.machine) profile from the [`settings`](https://github.com/AndyEveritt/N-Fab/tree/master/settings) folder of this repo
   - Click `Select` next to `Print Settings`
-  - Import the [`ASMBL.printsetting`](https://github.com/AndyEveritt/ASMBL/blob/master/settings/ASMBL.printsetting) profile from the [`settings`](https://github.com/AndyEveritt/ASMBL/tree/master/settings) folder of this repo
+  - Import the [`N-Fab.printsetting`](https://github.com/AndyEveritt/N-Fab/blob/master/settings/N-Fab.printsetting) profile from the [`settings`](https://github.com/AndyEveritt/N-Fab/tree/master/settings) folder of this repo
   - Under `Model` select the offset body created earlier
 
 Workspace:
@@ -236,7 +236,7 @@ The origin changes depending on if you are using Fusion360 or an external slicer
 
 ### CAM setup
 
-The CAMing proceedures for ASMBL can be configured with the following processes:
+The CAMing proceedures for N-Fab can be configured with the following processes:
 
 | Process             | Usage                                                                                                            |
 | ------------------- | ---------------------------------------------------------------------------------------------------------------- |
@@ -278,7 +278,7 @@ otherwise, this program will automatically replace any retracts/transitions Fusi
 
 #### Tool Config
 
-You can import our tool config by opening the `Tool Library` then right clicking on either the Document, `Cloud`, or `Local` then `Import Tool Library`. The library to import is located in this repo in [`settings`/`ASMBL.tools`](https://github.com/AndyEveritt/ASMBL/blob/master/settings/ASMBL.tools)
+You can import our tool config by opening the `Tool Library` then right clicking on either the Document, `Cloud`, or `Local` then `Import Tool Library`. The library to import is located in this repo in [`settings`/`N-Fab.tools`](https://github.com/AndyEveritt/N-Fab/blob/master/settings/N-Fab.tools)
 
 <img src="docs/usage/images/fusion_cam_tool_import.png" width=480>
 
@@ -303,7 +303,7 @@ Full setup details for operations can be found here: [CAM Operation Setup](docs/
 - Regenerate the additive setup
 - Regenerate the subtractive setup
   - This offsets the CAM operation Z height equal to the raft height.
-- Click on the `ASMBL` tab along the top navigation bar
+- Click on the `N-Fab` tab along the top navigation bar
 - Click `Post Process`
   - If all the toolpaths have not been previously generated or are out of date, you can tick the box to re generate all toolpaths
     - This currently has a bug if the additive toolpath isn't the last to generate where the progress bar will not complete. If this happens just close the progress bar are rerun the post process command
@@ -314,7 +314,7 @@ Full setup details for operations can be found here: [CAM Operation Setup](docs/
     - Layer Dropdown can also affect finish
       - This will lower the z height of all the CAM operations by this value, it can be used to make the cutter tip locate in the middle of a layer instead of between 2 layers which can give a better finish; but if you want Z accuracy, leave it at 0.
   - Click `OK`
-- The output gcode will be saved in `~/ASMBL/output/`
+- The output gcode will be saved in `~/N-Fab/output/`
   - If the file name already exists, it will be overwritten without warning.
   - The generated file will automatically open in your default `.gcode` editor.
   - **Always preview the gcode fully to check it for mistakes** This is Beta software, there will be bugs.
@@ -322,7 +322,7 @@ Full setup details for operations can be found here: [CAM Operation Setup](docs/
 ### Standalone
 
 - Generate and Simulate the full Setup to ensure in looks sensible
-- In the `Manufacturing` workspace, `ASMBL` tab; click `Actions` > `Post Process Cam`
+- In the `Manufacturing` workspace, `N-Fab` tab; click `Actions` > `Post Process Cam`
 - Click `Ok`
 
 >A new temporary file is created for each unsuppressed milling setup, rename or change the folder location of any generated file
@@ -332,7 +332,7 @@ Fusion will try to open the generated gcode file in VSCode by default, if you do
 
 #### Config
 
-The `config.json` contains the parameters that control how the ASMBL parser merges the 2 input files if running the program standalone.
+The `config.json` contains the parameters that control how the N-Fab parser merges the 2 input files if running the program standalone.
 
 Update the `config.json` so that the following settings are correct for your project:
 
@@ -371,9 +371,9 @@ By default the program expects the `config.json` to be in the same directory as 
 
 ## Run Standalone
 
-To run the program, ensure the `config.json` is configured correctly, then run the `ASMBL.exe`
+To run the program, ensure the `config.json` is configured correctly, then run the `N-Fab.exe`
 
-The latest `.exe` can be found here https://github.com/AndyEveritt/ASMBL/releases
+The latest `.exe` can be found here https://github.com/AndyEveritt/N-Fab/releases
 
 The program will output the file with a name according the the config settings in the `output` folder. (An output folder will be created in the same directory as the `.exe` if one does not exist)
 
@@ -387,7 +387,7 @@ The subtractive processes are displayed as travel moves, scroll through the laye
 
 # Updating
 
-Close Fusion 360 and overwrite the contents of the ASMBL repo folder with the latest version from releases (or use `git pull` if you previously cloned the repo).
+Close Fusion 360 and overwrite the contents of the N-Fab repo folder with the latest version from releases (or use `git pull` if you previously cloned the repo).
 
 If you want Fusion to automatically detect the update then make sure the folder names are the same, otherwise repeat this step with the new folder [Fusion 360 Add-in](#fusion-360-add-in).
 

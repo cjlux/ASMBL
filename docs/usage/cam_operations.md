@@ -2,7 +2,7 @@
 
 # Planar
 
-The follow page details the settings to set for the main operation types used for ASMBL. Most models can be setup using a single `3D Contour` and `2D Adaptive Clearing`. Feature specific CAM operations (such as smoothing a fillet) can be done with additional operations if the model requires it.
+The follow page details the settings to set for the main operation types used for N-Fab. Most models can be setup using a single `3D Contour` and `2D Adaptive Clearing`. Feature specific CAM operations (such as smoothing a fillet) can be done with additional operations if the model requires it.
 
 This is a guide that I have found to work in most situations, it may not always be correct.
 
@@ -13,7 +13,7 @@ This is a guide that I have found to work in most situations, it may not always 
 <img src="images/2d_adaptive_selection.png" width=480>
 
 * `Tool`
-  * Select/create a cutting tool with appropriate dimensions for what is installed on you ASMBL machine
+  * Select/create a cutting tool with appropriate dimensions for what is installed on you N-Fab machine
 * `Geometry`
   * Select the surface you would like to top surface
 * `Heights`
@@ -37,7 +37,7 @@ Multiple surfaces at different heights can be selected with the same process. Th
 <img src="images/3d_contour_1.png" width="480">
 
 * `Tool`
-  * Select/create a cutting tool with appropriate dimensions for what is installed on you ASMBL machine
+  * Select/create a cutting tool with appropriate dimensions for what is installed on you N-Fab machine
 * `Geometry`
   * Recommended settings to machine everything:
     * Set `Machining Boundary` to `Silhouette`
@@ -72,7 +72,7 @@ Angled overhangs can be CAM'd using offset faces. See the example [here](../../e
 > **Uses**: Can be used for vertical walls where you may want more control that with a 3D contour
 
 * `Tool`
-  * Select/create a cutting tool with appropriate dimensions for what is installed on you ASMBL machine
+  * Select/create a cutting tool with appropriate dimensions for what is installed on you N-Fab machine
 * `Geometry`
   * Select all the contours for the sides you would like to cut
 * `Heights`

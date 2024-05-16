@@ -58,7 +58,7 @@ class Parser:
                 progress.message = 'Appending substractive to additive Gcode'
                 progress.progressValue += 1
                 
-            self.merged_gcode_script = '; ASMBL gcode created by https://github.com/cjlux/ASMBL\n'
+            self.merged_gcode_script = '; N-Fab gcode created by https://github.com/cjlux/ASMBL\n'
             self.merged_gcode_script += self.appendSub2AddGcode()
             
             return
@@ -136,7 +136,7 @@ class Parser:
         '''
         
         # write debug info in a log file:
-        outputFolder = os.path.expanduser('~/Asmbl/output/')
+        outputFolder = os.path.expanduser('~/N-Fab/output/')
         fileName = self.config['OutputSettings']['filename'] + '.log'
         log_file_name = os.path.join(outputFolder, fileName)
         if os.path.exists(log_file_name):
@@ -611,7 +611,7 @@ class Parser:
 
     def create_gcode_script(self, gcode):
         """ Converts list of layers into a single string with appropriate tool changes """
-        self.merged_gcode_script = '; ASMBL gcode created by https://github.com/cjlux/ASMBL\n'
+        self.merged_gcode_script = '; N-Fab gcode created by https://github.com/cjlux/ASMBL\n'
         prev_layer = gcode[0]
         for layer in gcode:
             self.set_last_additive_tool(prev_layer)

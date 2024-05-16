@@ -366,7 +366,7 @@ class PostProcessExecuteHandler(adsk.core.CommandEventHandler):
         #  create and show the progress dialog for remainder of process.
         progress = ui.createProgressDialog()
         progress.isCancelButtonShown = False
-        progress.show('ASMBL Code Generation', 'Posting Toolpaths', 0, 7)
+        progress.show('N-Fab Code Generation', 'Posting Toolpaths', 0, 7)
 
         outputFolder = cam.temporaryFolder
         tmpAdditive = os.path.join(outputFolder, 'tmpAdditive.gcode')
@@ -432,7 +432,7 @@ class PostProcessExecuteHandler(adsk.core.CommandEventHandler):
             time.sleep(1)   # be sure files are written completely
             asmbl_parser = Parser(config, progress)
 
-            outputFolder = os.path.expanduser('~/Asmbl/output/')
+            outputFolder = os.path.expanduser('~/N-Fab/output/')
             asmbl_parser.create_output_file(asmbl_parser.merged_gcode_script, outputFolder)
 
             utils.open_file(outputFolder)
@@ -441,7 +441,7 @@ class PostProcessExecuteHandler(adsk.core.CommandEventHandler):
             return
 
         progress.hide()
-        ui.messageBox('ASMBL gcode has been successfully created. File saved in \'~/Asmbl/output/\'')
+        ui.messageBox('N-Fab gcode has been successfully created. File saved in \'~/N-Fab/output/\'')
 
 
 # Event handler that reacts when the command definitio is executed which
@@ -508,7 +508,7 @@ class PostProcessCamExecuteHandler(adsk.core.CommandEventHandler):
                 return
 
         try:
-            output_folder = os.path.expanduser('~/Asmbl/output/standalone/')
+            output_folder = os.path.expanduser('~/N-Fab/output/standalone/')
 
             # get any unsuppressed setups.
             setups = get_setups(ui, cam)

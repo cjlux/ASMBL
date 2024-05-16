@@ -16,7 +16,7 @@
   <capacities depth="0mm" height="0mm" weight="0kg" width="0mm"/>
 
   <post>
-    <postProcessor>c:/users/andrew/appdata/roaming/autodesk/autodesk fusion 360/api/addins/asmbl/post_processors/asmbl_fff.cps</postProcessor>
+    <postProcessor>c:/users/andrew/appdata/roaming/autodesk/autodesk fusion 360/api/addins/N-Fab/post_processors/asmbl_fff.cps</postProcessor>
     <postProperties>
       <Parameters/>
     </postProperties>

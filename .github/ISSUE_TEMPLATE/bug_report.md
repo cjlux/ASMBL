@@ -10,7 +10,7 @@ assignees: AndyEveritt
 ## Setup
 
 ### Version
-_Version of ASMBL used_
+_Version of N-Fab used_
 
 ### Standalone or Fusion Plugin
 _Whether you are using the code as a standalone program or Fusion360 plugin_
