@@ -641,10 +641,10 @@ class Parser:
         for cam_layer in cam_layers:
             #<JLC4> : don't add retracts if srategy is 'parallel_new':
             #<JLC5> : clearance is set to 15mm':
-            if cam_layer.strategy in ('parallel_new'):
-                pass
-            else:
-                self.add_retracts(cam_layer, 15)  # second argument was by default
+            #if cam_layer.strategy in ('parallel_new'):
+            #    pass
+            #else:
+            self.add_retracts(cam_layer, 15)  # second argument was by default
             #</JLC>
 
         merged_gcode = gcode_add + cam_layers
