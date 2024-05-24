@@ -58,7 +58,7 @@ class Parser:
                 progress.message = 'Appending substractive to additive Gcode'
                 progress.progressValue += 1
                 
-            self.merged_gcode_script = '; N-Fab gcode created by https://github.com/cjlux/ASMBL\n'
+            self.merged_gcode_script = '; N-Fab gcode created by NAMMA\n'
             self.merged_gcode_script += self.appendSub2AddGcode()
             
             return
@@ -108,7 +108,8 @@ class Parser:
             self.gcode_add = gcode_add_file.read()
 
         with open(config['InputFiles']['subtractive_gcode'], 'r') as gcode_sub_file:
-            #self.gcode_sub = gcode_sub_file.read()
+            if self.flag_append_AddSubGcode:
+                self.gcode_sub = gcode_sub_file.read()
             #<JLC4>: rwind the file to get all the lines:
             gcode_sub_file.seek(0)
             self.gcode_sub_lines = gcode_sub_file.readlines()
