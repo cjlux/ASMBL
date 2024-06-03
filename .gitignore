@@ -1,6 +1,8 @@
 gcode*
 .vscode
 sandBox/
+config.json
+config_*.json
 
 # 3D files
 *.gcode

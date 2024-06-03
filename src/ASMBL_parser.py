@@ -177,7 +177,8 @@ class Parser:
         '''
         This method:
         - reads the whole substractive GCode file to get all the lines
-        - looks for lines beginning with the TAG "(strategy: parallel_new)"
+        - looks for lines beginning with the TAG "(strategy: parallel_new)" or 
+          "(strategy: ramp)"
         For each bloc beginning with TAG and ending with a blank line ('\n'), the gcode  
         lines are grouped by sub-blocs with a z range <= zRangeMax3Dsurfacing_mm, 
         overlapping each other with zOverlap3Dsurfacing_mm.
@@ -342,11 +343,12 @@ class Parser:
                         continue
                  
                     if cutting: 
-                        # When in cuuting state we must find out the start and end of each 
-                        # small cutting bloc:
+                        # When in cutting state we must find out the start and end of each small cutting bloc:
                         if line[:2] == 'G1': 
                             Z = float(line.strip().split()[3][1:])
-                            if prevZ is not None:
+                            if prevZ is None:
+                                 prevZ = Z
+                            else:
                                 # JLC : Fusion BUG : sometime we find 2 consecutive G1 lines with a difference
                                 #       between the 2 Z  of about 0.001 mm...
                                 if 0 < abs(Z - prevZ) <= 0.001: 
@@ -355,8 +357,10 @@ class Parser:
                                     Z_increase = True
                                 elif Z < prevZ:
                                     Z_increase = False
-                            else:
-                                prevZ = Z
+                                #<JLC6>
+                                elif Z == prevZ:
+                                    Z_increase = None
+                                #</JLC6>                               
 
                             if Z1 == None :
                                 # this is the beginning of a small cutting bloc
@@ -366,7 +370,10 @@ class Parser:
                                     if abs(Z1 - Z) >= (zRangeMax3Dsurfacing_mm - zOverlap3Dsurfacing_mm):
                                         # this is the beginning of the next small overlapping cutting bloc
                                         next_L1 = i
-                                if (abs(Z1 - Z) >= zRangeMax3Dsurfacing_mm) or (Z_increase and Z == Zmax) or (not Z_increase and Z == Zmin):
+                                        
+                                if (abs(Z1 - Z) >= zRangeMax3Dsurfacing_mm) or \
+                                   (Z_increase == True and Z == Zmax) or \
+                                   (Z_increase == False and Z == Zmin):
                                     # this is the end of a small cutting bloc: the bloc is added to the 
                                     # object splitted_gcode:
                                     Z2, L2 = Z, i
@@ -384,19 +391,27 @@ class Parser:
                                             splitted_gcode += '(type: cutting)\n'
 
                                     splitted_gcode += ''.join(self.gcode_sub_lines[first_line_bloc:L2+1])
-                                    if splitted_gcode[-2:] != '\n\n': splitted_gcode += '\n'
                                     
-                                    if first_split: first_split = False
+                                    if splitted_gcode[-2:] != '\n\n': 
+                                        splitted_gcode += '\n'
+                
+                                    if first_split: 
+                                        first_split = False
                                  
                                     # Ready to build the surfacing bloc.
-                                    # Normally the new bloc to process overlaps the current bloc
-                                    if next_L1 is not None: first_line_bloc = next_L1 + 1
+                                    # Normally the next bloc to process overlaps the current bloc
+                                    if next_L1 is not None: 
+                                        first_line_bloc = next_L1 + 1
+                                    #<JLC6>
+                                    else:
+                                        first_line_bloc = i
+                                    #</JLC6>
                                     
-                                    # come back to the while loop:
+                                    # break the 'for loop' to come back to the 'while loop':
                                     break      
                                 
                 if Z_increase is not None:     
-                    if (Z_increase and Z == Zmax) or (not Z_increase and Z == Zmin): 
+                    if (Z_increase == True and Z == Zmax) or (Z_increase == False and Z == Zmin): 
                         if '(strategy: ramp)' in bloc['strategy']:
                             # add the rest of the lines of the bloc:
                             # 1/ remove the trailing '\n':
@@ -404,8 +419,15 @@ class Parser:
                             # 2/ add the lines:
                             splitted_gcode += ''.join(self.gcode_sub_lines[i+1:end_line_bloc])
                             if splitted_gcode[-2:] != '\n\n': splitted_gcode += '\n'
-                        break
-                    
+                            
+                            break  #<JLC6> break was outside the if bock
+                        else:
+                            pass
+                #<JLC6>
+                if i >= end_line_bloc - 1:
+                    break
+                #</JLC6>
+            # Go on with the next bloc:
             start_line_number = end_line_bloc
             
         splitted_gcode += ''.join(self.gcode_sub_lines[end_line_bloc:])
