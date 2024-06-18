@@ -158,7 +158,10 @@ class Parser:
         with open(new_sub_gcode_file_name, 'w') as F:
             F.write(splitted_gcode)
         F.close()
-            
+
+        #<JLC5> bug 5.2 presence og '(type: ramp)' in sub gcode ???
+        splitted_gcode = splitted_gcode.replace('(type: ramp)', '(type: cutting)')     
+        #</JLC5>
         # Now returns all the lines:
         return splitted_gcode
         
