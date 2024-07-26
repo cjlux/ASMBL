@@ -119,7 +119,7 @@ class Parser:
     def appendSub2AddGcode(self):
         """ Just append the substractive Gcode to the additive Gcode..."""
         if self.gcode_add[-1] != '\n': self.gcode_add += '\n'
-        return self.gcode_add + self.gcode_sub
+        return self.gcode_add + self.gcode_sub.replace('(', ';(')
     #</JLC>
 
     #<JLC4>
