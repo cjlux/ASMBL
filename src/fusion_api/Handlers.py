@@ -299,7 +299,7 @@ class PostProcessCreatedEventHandler(adsk.core.CommandCreatedEventHandler):
             
             #<JLC>
             zRangeMax_3Dsurfacing_mm = groupCamChildInputs.addFloatSpinnerCommandInput(
-                'zRange3Dmm', 'zRangeMax 3D surfacing', 'mm', 0, 6, 0.1, 5)
+                'zRange3Dmm', 'zRangeMax 3D surfacing', 'mm', 0, 11, 0.1, 5)
             zRangeMax_3Dsurfacing_mm.tooltip = 'the max range [mm] of 3D surfacing above which operation is spllited'
             zRangeMax_3Dsurfacing_mm.tooltipDescription = '\
                 <br>This alters the toolpath and when it hapens</br>\
