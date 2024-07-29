@@ -68,6 +68,15 @@ class Parser:
         if progress:
             progress.message = 'Spliting additive gcode layers'
             progress.progressValue += 1
+        
+        #/<JLC7>
+        # OrcaSlicer adds an info bloc at the end of the gcode file after the line '; EXECUTABLE_BLOCK_END'
+        # that contains many lines ' ; layer ....' causing an error in method get_layer_height() of class 
+        # AdditiveGcodeLayer.
+        # so we skip all the gcode after the line ; EXECUTABLE_BLOCK_END' if any.
+        if '; EXECUTABLE_BLOCK_END' in self.gcode_add:
+            self.gcode_add = self.gcode_add.split('; EXECUTABLE_BLOCK_END')[0] + '; EXECUTABLE_BLOCK_END\n'
+            
         self.gcode_add_layers = self.split_additive_layers(self.gcode_add)
 
         #<JLC4>
