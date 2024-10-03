@@ -4,6 +4,8 @@ import adsk.fusion
 import traceback
 import time
 import os
+import os.path
+import shutil
 import sys
 import subprocess
 
@@ -97,7 +99,7 @@ def remove_old_file(path, file_name):
         pass
 
 
-def postToolpaths(ui, cam, viewResult):
+def postToolpaths(ui, cam, viewResult, externAdditiveGcode):
     # get any unsuppressed setups.
     setups = get_setups(ui, cam)
 
@@ -137,7 +139,10 @@ def postToolpaths(ui, cam, viewResult):
             cam.postProcess(setup, postInput)
 
         elif setupOperationType == adsk.cam.OperationTypes.AdditiveOperation:
-            programName = 'tmpAdditive'
+            if externAdditiveGcode:
+                programName = 'tmpAdditiveExtern'
+            else:
+                programName = 'tmpAdditive'
             postConfig = os.path.join(Path(__file__).parents[2], 'post_processors', 'asmbl_fff.cps')
 
             # create the postInput object
@@ -238,6 +243,35 @@ class PostProcessCreatedEventHandler(adsk.core.CommandCreatedEventHandler):
             # camSetup = groupSetupChildInputs.addSelectionInput('camSetup', 'CAM Setup', 'Select the milling setup')
             # camSetup.setSelectionLimits(1)
 
+            msg = ''
+            # Set styles of file dialog.
+            fileDlg = ui.createFileDialog()
+            fileDlg.isMultiSelectEnabled = False
+            fileDlg.title = 'Fusion Open File Dialog'
+            fileDlg.filter = '*.gcode'
+            fileDlg.initialDirectory = r'C:\Users\TomLOPEZ\Desktop'
+            fileDlg.title = 'Veuillez sélectionner le fichier Gcode généré par OrcaSlicer'
+        
+            # Show file open dialog
+
+            products = app.activeDocument.products
+            product = products.itemByProductType('CAMProductType')
+            cam = adsk.cam.CAM.cast(product)
+
+            dlgResult = fileDlg.showOpen()
+            if dlgResult == adsk.core.DialogResults.DialogOK:
+                msg += '\nFiles to Open:'
+                msg += fileDlg.filename
+                # ui.messageBox(msg)
+                orcaFile = os.path.basename(fileDlg.filename)
+                dest = os.path.join(cam.temporaryFolder ,'tmpAdditive.gcode')
+                shutil.copyfile (fileDlg.filename, dest)
+                ui.messageBox(dest)
+            else : 
+                orcaFile = ''
+
+
+
             # Create settings tab inputs
             tabCmdInputSettings = inputs.addTabCommandInput('settings', 'Settings')
             tabSettingsChildInputs = tabCmdInputSettings.children
@@ -256,6 +290,9 @@ class PostProcessCreatedEventHandler(adsk.core.CommandCreatedEventHandler):
                 'appendAddSubGcode', 'Append Add & Sub Gcode', True, '', False)
             appendAddSubGcode.tooltip = 'Just append the subtractive Gcode to the additive Gocde.'
             #</JLC>
+
+            # Create an editable textbox input.
+            tabSettingsChildInputs.addTextBoxCommandInput('orcaFile', 'Orca File Name', orcaFile , 1, False)
 
             # Create an editable textbox input.
             tabSettingsChildInputs.addTextBoxCommandInput('outputName', 'Output File Name', '1001', 1, False)
@@ -345,6 +382,7 @@ class PostProcessExecuteHandler(adsk.core.CommandEventHandler):
         layerOverlap = inputs.itemById('layerOverlap').value
         layerDropdown = inputs.itemById('layerDropdown').value
         outputName = inputs.itemById('outputName').text
+        orcaFile = inputs.itemById('orcaFile').text
         #<JLC>
         appendAddSubGcode = inputs.itemById('appendAddSubGcode').value
         zRangeMax3Dsurfacing_mm = inputs.itemById('zRange3Dmm').value*10
@@ -365,7 +403,7 @@ class PostProcessExecuteHandler(adsk.core.CommandEventHandler):
 
         #  create and show the progress dialog for remainder of process.
         progress = ui.createProgressDialog()
-        progress.isCancelButtonShown = False
+        progress.isCancelButtonShown = True
         progress.show('N-Fab Code Generation', 'Posting Toolpaths', 0, 7)
 
         outputFolder = cam.temporaryFolder
@@ -380,7 +418,8 @@ class PostProcessExecuteHandler(adsk.core.CommandEventHandler):
 
         try:
             start = time.time()
-            postToolpaths(ui, cam, viewIntermediateFiles)
+            externAdditiveGcode = orcaFile != ""
+            postToolpaths(ui, cam, viewIntermediateFiles, externAdditiveGcode)
             while not (os.path.exists(tmpAdditive) and os.path.exists(tmpSubtractive)):
                 if time.time() > start + 10:
                     ui.messageBox('Posting timed out')
