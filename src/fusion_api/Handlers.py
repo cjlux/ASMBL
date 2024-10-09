@@ -1,13 +1,7 @@
 from pathlib import Path
 import adsk.core
 import adsk.fusion
-import traceback
-import time
-import os
-import os.path
-import shutil
-import sys
-import subprocess
+import time, os, shutil, sys, subprocess, traceback
 
 from ..ASMBL_parser import Parser
 from .. import utils
@@ -15,7 +9,6 @@ from .. import utils
 # Global list to keep all event handlers in scope.
 # This is only needed with Python.
 handlers = []
-
 
 def generateAllTootpaths(ui, cam):
     # Check CAM data exists.

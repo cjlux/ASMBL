@@ -69,16 +69,23 @@ class Parser:
             progress.message = 'Spliting additive gcode layers'
             progress.progressValue += 1
         
-        #/<JLC7>
+        #<JLC7>
         # OrcaSlicer adds an info bloc at the end of the gcode file after the line '; EXECUTABLE_BLOCK_END'
         # that contains many lines ' ; layer ....' causing an error in method get_layer_height() of class 
         # AdditiveGcodeLayer.
         # so we skip all the gcode after the line ; EXECUTABLE_BLOCK_END' if any.
         if '; EXECUTABLE_BLOCK_END' in self.gcode_add:
             self.gcode_add = self.gcode_add.split('; EXECUTABLE_BLOCK_END')[0] + '; EXECUTABLE_BLOCK_END\n'
-            
-        self.gcode_add_layers = self.split_additive_layers(self.gcode_add)
+        #</JLC7>
+        
+        #<JLC8>
+        Orca_gcode = False
+        if 'OrcaSlicer' in self.gcode_add:
+            Orca_gcode = True
+        #</JLC8>
 
+        self.gcode_add_layers = self.split_additive_layers(self.gcode_add, Orca_gcode)
+        
         #<JLC4>
         print('Pre-processing substractive gcode file...')
         if progress:
@@ -446,10 +453,14 @@ class Parser:
         return splitted_gcode
     #</JLC4>
     
-    def split_additive_layers(self, gcode_add):
+    def split_additive_layers(self, gcode_add, Orca_gcode):
         """ Takes Simplify3D gcode and splits in by layer """
-        tmp_list = re.split('(; layer)', gcode_add)
-
+        #<JLC8>
+        tag = '(; layer)'                         # for Fusion360 additive GCode
+        if Orca_gcode : tag = ';LAYER_CHANGE'     # for OrcaSlicer additive GCode
+        tmp_list = re.split(tag, gcode_add)
+        #</JLC8>
+        
         gcode_add_layers = []
         initialise_layer = AdditiveGcodeLayer(
             tmp_list.pop(0),
