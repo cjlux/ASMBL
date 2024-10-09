@@ -68,23 +68,27 @@ class Parser:
         if progress:
             progress.message = 'Spliting additive gcode layers'
             progress.progressValue += 1
-        
-        #<JLC7>
-        # OrcaSlicer adds an info bloc at the end of the gcode file after the line '; EXECUTABLE_BLOCK_END'
-        # that contains many lines ' ; layer ....' causing an error in method get_layer_height() of class 
-        # AdditiveGcodeLayer.
-        # so we skip all the gcode after the line ; EXECUTABLE_BLOCK_END' if any.
-        if '; EXECUTABLE_BLOCK_END' in self.gcode_add:
-            self.gcode_add = self.gcode_add.split('; EXECUTABLE_BLOCK_END')[0] + '; EXECUTABLE_BLOCK_END\n'
-        #</JLC7>
-        
+            
         #<JLC8>
-        Orca_gcode = False
+        ORCA = False
         if 'OrcaSlicer' in self.gcode_add:
-            Orca_gcode = True
-        #</JLC8>
+            ORCA = True
+        
+            # skip all the lines before 'EXECUTABLE_BLOCK_START':
+            if '; EXECUTABLE_BLOCK_START' in self.gcode_add:
+                self.gcode_add = '; EXECUTABLE_BLOCK_START\n' + self.gcode_add.split('; EXECUTABLE_BLOCK_START')[1]
 
-        self.gcode_add_layers = self.split_additive_layers(self.gcode_add, Orca_gcode)
+            #<JLC7>
+            # OrcaSlicer adds an info bloc at the end of the gcode file after the line '; EXECUTABLE_BLOCK_END'
+            # that contains many lines ' ; layer ....' causing an error in method get_layer_height() of class 
+            # AdditiveGcodeLayer.
+            # so we skip all the gcode after the line ; EXECUTABLE_BLOCK_END' if any.
+            if '; EXECUTABLE_BLOCK_END' in self.gcode_add:
+                self.gcode_add = self.gcode_add.split('; EXECUTABLE_BLOCK_END')[0] + '; EXECUTABLE_BLOCK_END\n'
+            #</JLC7>
+        #</JLC8>
+        
+        self.gcode_add_layers = self.split_additive_layers(self.gcode_add, ORCA)
         
         #<JLC4>
         print('Pre-processing substractive gcode file...')
@@ -196,8 +200,10 @@ class Parser:
         '''
         This method:
         - reads the whole substractive GCode file to get all the lines
-        - looks for lines beginning with the TAG "(strategy: parallel_new)" or 
-          "(strategy: ramp)"
+        - looks for lines beginning with the TAG :
+            "(strategy: parallel_new)" or 
+            "(strategy: ramp)"
+            "(strategy: contour2D)
         For each bloc beginning with TAG and ending with a blank line ('\n'), the gcode  
         lines are grouped by sub-blocs with a z range <= zRangeMax3Dsurfacing_mm, 
         overlapping each other with zOverlap3Dsurfacing_mm.
@@ -242,7 +248,7 @@ class Parser:
                     # add lines like "T1" and "M3 S14000" to header:
                     header += line
                     
-                elif line.startswith('(type: cutting)'):
+                elif line.startswith('(type: cutting)') or line.startswith('(type: ramp)'):
                     cutting = True
                     if first_cutting_line is None:
                         first_cutting_line = i-1
@@ -453,11 +459,11 @@ class Parser:
         return splitted_gcode
     #</JLC4>
     
-    def split_additive_layers(self, gcode_add, Orca_gcode):
+    def split_additive_layers(self, gcode_add, ORCA):
         """ Takes Simplify3D gcode and splits in by layer """
         #<JLC8>
         tag = '(; layer)'                         # for Fusion360 additive GCode
-        if Orca_gcode : tag = ';LAYER_CHANGE'     # for OrcaSlicer additive GCode
+        if ORCA : tag = '(;LAYER_CHANGE)'     # for OrcaSlicer additive GCode
         tmp_list = re.split(tag, gcode_add)
         #</JLC8>
         
@@ -474,7 +480,11 @@ class Parser:
         for i in range(ceil(len(tmp_list)/2)):
 
             layer = tmp_list[2*i] + tmp_list[2*i+1]
-            name = layer.split(',')[0][2:]
+            if ORCA:
+                name = ''.join(layer.split(';')[:3]).replace('\n',' ').strip()
+            else:
+                # Fusion360
+                name = layer.split(',')[0][2:]
 
             if 2*i + 1 == len(tmp_list) - 1:
                 gcode_add_layers.append(AdditiveGcodeLayer(

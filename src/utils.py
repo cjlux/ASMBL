@@ -6,6 +6,13 @@ import time
 
 def convert_relative(gcode_abs):
     """ Converts absolute extrusion gcode into relative extrusion gcode """
+    
+    #<JLC9> avoid processing gcode file if alredy relative ;-)
+    if 'M83 ' in gcode_abs or 'M83\n' in gcode_abs: 
+        gcode_rel = gcode_abs
+        return gcode_rel 
+    #</jlc9>
+    
     absolute_mode = False
     last_tool = None
     last_e = {}     # {'tool': last extrusion value}
