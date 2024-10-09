@@ -145,7 +145,7 @@ class Parser:
     #<JLC4>
     def preprocess_sub_gcode_file(self):
         '''
-        To split surfacing operations with a large Z range into smaller overlapping surfacing 
+        To split CAM operations with a large Z range into smaller overlapping CAM 
         operations each covering a small Z range.
         '''
         
@@ -460,7 +460,13 @@ class Parser:
     #</JLC4>
     
     def split_additive_layers(self, gcode_add, ORCA):
-        """ Takes Simplify3D gcode and splits in by layer """
+        """ Takes additive gcode and splits in by layer.
+            the 'tmp_list' list consists in :
+            - a header,
+            - pairs of (layer_separator_tag str, gcode str of the layer)
+            For fusion360 tah layer separator tag is '; layer', 
+            for Orca it is ';LAYER_CHANGE'.
+        """
         #<JLC8>
         tag = '(; layer)'                         # for Fusion360 additive GCode
         if ORCA : tag = '(;LAYER_CHANGE)'     # for OrcaSlicer additive GCode
