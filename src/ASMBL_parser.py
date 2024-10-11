@@ -73,11 +73,7 @@ class Parser:
         ORCA = False
         if 'OrcaSlicer' in self.gcode_add:
             ORCA = True
-        
-            # skip all the lines before 'EXECUTABLE_BLOCK_START':
-            if '; EXECUTABLE_BLOCK_START' in self.gcode_add:
-                self.gcode_add = '; EXECUTABLE_BLOCK_START\n' + self.gcode_add.split('; EXECUTABLE_BLOCK_START')[1]
-
+            
             #<JLC7>
             # OrcaSlicer adds an info bloc at the end of the gcode file after the line '; EXECUTABLE_BLOCK_END'
             # that contains many lines ' ; layer ....' causing an error in method get_layer_height() of class 
