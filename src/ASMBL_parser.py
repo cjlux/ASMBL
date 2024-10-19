@@ -175,9 +175,12 @@ class Parser:
             F.write(splitted_gcode)
         F.close()
 
-        #<JLC5> bug 5.2 presence og '(type: ramp)' in sub gcode ???
-        splitted_gcode = splitted_gcode.replace('(type: ramp)', '(type: cutting)')     
-        #</JLC5>
+        # <JLC5> bug 5.2 presence of '(type: ramp)' in sub gcode ???
+        # splitted_gcode = splitted_gcode.replace('(type: ramp)', '(type: cutting)')     
+        # JLC: from ASMBL-1.3, the 'ramp' tag is fully processed 
+        #       => no more need to replace 'ramp' by 'cutting'
+        # </JLC5>
+        
         # Now returns all the lines:
         return splitted_gcode
         
@@ -209,7 +212,8 @@ class Parser:
         bloc_found = False
 
         STRATEGIES = ('(strategy: parallel_new)', 
-                      '(strategy: ramp)')
+                      '(strategy: ramp)',
+                      '(strategy: contour2d)')
 
         # scan the GCode lines to catch the target:
         for i, line in enumerate(self.gcode_sub_lines, 1):
@@ -218,6 +222,7 @@ class Parser:
                 start_bloc = i-2
                 name = self.gcode_sub_lines[start_bloc]
                 bloc_to_split[num_bloc] = {'strategy': f'{STRATEGY}\n',
+                                           'type': '',
                                            'name': name, 
                                            'header': '',
                                            'start_bloc': start_bloc, 
@@ -244,11 +249,12 @@ class Parser:
                     # add lines like "T1" and "M3 S14000" to header:
                     header += line
                     
-                elif line.startswith('(type: cutting)') or line.startswith('(type: ramp)'):
+                elif not cutting and (line.startswith('(type: cutting)') or line.startswith('(type: ramp)')):
                     cutting = True
                     if first_cutting_line is None:
                         first_cutting_line = i-1
                         bloc_to_split[num_bloc]['first_cutting_line'] = first_cutting_line
+                        bloc_to_split[num_bloc]['type'] = line.strip()
                        
                 elif line[:2] == 'G0':
                     prev_line = self.gcode_sub_lines[i-2]
@@ -270,6 +276,7 @@ class Parser:
                         new_name = name.strip()[:-1] + f'- split {num_sub_bloc})\n'
                         
                         bloc_to_split[num_bloc] = {'strategy': f'{STRATEGY}\n', 
+                                                   'type': prev_line.strip,
                                                    'name': new_name, 
                                                    'header': header,
                                                    'start_bloc': start_bloc, 
@@ -310,11 +317,13 @@ class Parser:
         for key in blocs_to_split:
             
             bloc = blocs_to_split[key]         
-            mess = f"Processing bloc {key}\n" + \
+            mess = "\n" + "="*30 + \
+                f"\nProcessing bloc {key}\n" + \
                 f"\t(start, end):{(bloc['start_bloc'], bloc['end_bloc'])}\n" + \
-                f"\tname:{repr(bloc['name'])}, needs_header:{bloc['needs_header']}\n" + \
-                f"\tstrategy:{repr(bloc['strategy'])}\n" + \
-                f"\theader:{repr(bloc['header'])}\n" + \
+                f"\tname        :{repr(bloc['name'])}, needs_header:{bloc['needs_header']}\n" + \
+                f"\tstrategy    :{repr(bloc['strategy'])}\n" + \
+                f"\ttype        :{repr(bloc['type'])}\n" + \
+                f"\theader      :{repr(bloc['header'])}\n" + \
                 f"\t(Zmin, Zmax):{(bloc['ZMinMax'])}\n"
             self.log_message(mess, log_file_path); print(mess)
             
@@ -344,7 +353,7 @@ class Parser:
                 Z, prevZ, Z1, Z2, L1, L2, next_L1 = None, None, None, None, None, None, None
                 cutting, Z_increase = False, None
             
-                if '(strategy: ramp)' in bloc['strategy'] and first_split == False:
+                if bloc['strategy'].strip() in ('(strategy: ramp)', '(strategy: contour2d)') and first_split == False:
                     # When surfacing a 'ramp', we are splitting a large numver of 'G1 ....' 
                     # # lines with just one '(cutting)' line in the preamble : we must keep
                     # the cutting state for all the 'G1 ...' lines:
@@ -353,13 +362,14 @@ class Parser:
                 # Every loop turn allows to build one of the overlapping smaller bloc:
                 for i, line in enumerate(self.gcode_sub_lines[first_line_bloc:end_line_bloc], first_line_bloc):
                  
-                    if not cutting and line.startswith('(type: cutting)'):
+                    if not cutting and (line.startswith('(type: cutting)') or line.startswith('(type: ramp)')) :
                         # start the cutting state:
                         cutting = True
                         continue   
                                   
                     elif cutting and line.startswith('('):
                         # exit from the cutting state
+                        print("line.startswith('('):", line)
                         cutting = False
                         continue
                  
@@ -406,10 +416,10 @@ class Parser:
                                         splitted_gcode += bloc['strategy']
                                         splitted_gcode += bloc['header']
                                         
-                                        if '(strategy: ramp)' in bloc['strategy']:
+                                        if bloc['strategy'].strip() in ('(strategy: ramp)', '(strategy: contour2d)'):
                                             # when splitting the many lines of a 'ramp', we must add
                                             # the '(type: cutting)\n' line in each small splitted bloc:
-                                            splitted_gcode += '(type: cutting)\n'
+                                            splitted_gcode += f"{bloc['type']}\n"
 
                                     splitted_gcode += ''.join(self.gcode_sub_lines[first_line_bloc:L2+1])
                                     
@@ -433,7 +443,7 @@ class Parser:
                                 
                 if Z_increase is not None:     
                     if (Z_increase == True and Z == Zmax) or (Z_increase == False and Z == Zmin): 
-                        if '(strategy: ramp)' in bloc['strategy']:
+                        if bloc['strategy'].strip() in ('(strategy: ramp)', '(strategy: contour2d)'):
                             # add the rest of the lines of the bloc:
                             # 1/ remove the trailing '\n':
                             if splitted_gcode[-2:] == '\n\n': splitted_gcode = splitted_gcode[:-1]
@@ -456,7 +466,7 @@ class Parser:
     #</JLC4>
     
     def split_additive_layers(self, gcode_add, ORCA):
-        """ Takes additive gcode and splits in by layer.
+        """ JLC: Takes additive gcode and splits in by layer.
             the 'tmp_list' list consists in :
             - a header,
             - pairs of (layer_separator_tag str, gcode str of the layer)
@@ -489,11 +499,11 @@ class Parser:
                 name = layer.split(',')[0][2:]
 
             if 2*i + 1 == len(tmp_list) - 1:
-                gcode_add_layers.append(AdditiveGcodeLayer(
-                    layer, 'end', inf))
+                #<JLC10>: was  gcode_add_layers.append(AdditiveGcodeLayer(layer, 'end', inf))
+                gcode_add_layers.append(AdditiveGcodeLayer(layer, 'end', ORCA=ORCA))
                 continue
 
-            gcode_add_layers.append(AdditiveGcodeLayer(layer, name))
+            gcode_add_layers.append(AdditiveGcodeLayer(layer, name, ORCA=ORCA))
 
         return gcode_add_layers
 
@@ -562,7 +572,7 @@ class Parser:
 
         Returns a list of layers, each to be merged as a whole unit.
         """
-        cutting_segments = [segment for segment in segments if segment.type == 'cutting']
+        cutting_segments = [segment for segment in segments if segment.type in ('cutting', 'ramp') ]
         cam_layers = []
         cutting_group = [cutting_segments[0]]
         cutting_height = cutting_segments[0].height

@@ -16,7 +16,10 @@ class CamGcodeLine:
 
 
 class CamGcodeSegment:
-    """ Stores gcode lines for a sequence of a specific movement type """
+    """ 
+    Stores gcode lines for a sequence of a specific movement type.
+    JLC: the type 'remp' is processed as is the type 'cutting'.
+    """
 
     def __init__(self, index, lines, segment_type):
         self.type = segment_type
@@ -25,7 +28,7 @@ class CamGcodeSegment:
         self.planar = None
         self.height = None
 
-        if self.type == 'cutting':
+        if self.type in ('cutting', 'ramp'):
             self.set_z_height()
 
     def get_min_z_height(self):
@@ -58,7 +61,10 @@ class CamGcodeSegment:
 
 
 class CamGcodeLayer:
-    """ Stores all the CAM operations in a specific layer. """
+    """
+    Stores all the CAM operations in a specific layer.
+    JLC: the type 'remp' is processed as is the type 'cutting'.
+    """
 
     def __init__(self, segments, name=None, strategy=None, tool=None, start_tool=None, cutting_height=None):
         self.segments = segments
@@ -93,7 +99,7 @@ class CamGcodeLayer:
 
     def set_cutting_height(self):
         self.cutting_height = max(
-            [segment.height for segment in self.segments if segment.type == 'cutting'])
+            [segment.height for segment in self.segments if segment.type in ('cutting', 'ramp')])
 
     def set_planar(self):
         non_planar_segments = [segment for segment in self.segments if segment.planar is False]
